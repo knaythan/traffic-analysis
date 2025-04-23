@@ -1,0 +1,7 @@
+runtime: python312
+automatic_scaling:
+  target_cpu_utilization: 0.90
+  max_instances: 1
+entrypoint: gunicorn -b :8080 webapp:server
+env_variables:
+  BUCKET_NAME: 'cs163-final-project'
