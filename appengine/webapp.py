@@ -22,54 +22,24 @@ server = app.server
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
-dfs = []
-for i in range(1, 101):
-    file_name = f'us_accidents_{i:02}.csv'
-    dfs.append(get_csv_from_gcs(BUCKET_NAME, file_name))
-df = pd.concat(dfs, ignore_index=True)
+df = get_csv_from_gcs(BUCKET_NAME, "us_accidents_01.csv")
 
 # # df = df.sample(n=30000, random_state=42)
 
-# Reusable visual components
 def severity_distribution():
-    severity_counts = df["Severity"].value_counts().sort_index()
-    fig = px.bar(x=severity_counts.index, y=severity_counts.values,
-                 labels={'x': 'Severity Level', 'y': 'Number of Accidents'},
-                 title='Accident Severity Distribution')
-    return dcc.Graph(figure=fig)
+    return dcc.Iframe(src="/assets/severity.html", width="100%", height="600")
 
 def feature_correlation():
-    corr_matrix = df.select_dtypes(include='number').corr()
-    fig = px.imshow(corr_matrix, text_auto=True,
-                    color_continuous_scale='Viridis',
-                    title='Feature Correlation Heatmap')
-    return dcc.Graph(figure=fig)
+    return dcc.Iframe(src="/assets/correlation.html", width="100%", height="600")
 
 def precipitation_vs_severity():
-    fig = px.scatter(df, x="Precipitation(in)", y="Severity", log_x=True,
-                     title="Precipitation vs Severity (Log Scale)",
-                     labels={"Precipitation(in)": "Precipitation (in)", "Severity": "Severity"})
-    return dcc.Graph(figure=fig)
+    return dcc.Iframe(src="/assets/precipitation.html", width="100%", height="600")
 
 def accidents_by_state():
-    state_counts = df["State"].value_counts().sort_values(ascending=False)
-    fig = px.bar(x=state_counts.index, y=state_counts.values,
-                 labels={'x': 'State', 'y': 'Number of Accidents'},
-                 title='Accident Distribution by State')
-    return dcc.Graph(figure=fig)
+    return dcc.Iframe(src="/assets/states.html", width="100%", height="600")
 
 def accident_heatmap():
-    try:
-        df_map = df[["Start_Lat", "Start_Lng"]].dropna()
-        if len(df_map) > 5000:
-            df_map = df_map.sample(n=5000, random_state=42)
-        heat_data = df_map.values.tolist()
-        m = folium.Map(location=[37.8, -96], zoom_start=5, tiles="CartoDB Voyager")
-        HeatMap(heat_data, radius=8, blur=4, max_zoom=10).add_to(m)
-        map_html = m.get_root().render()
-        return html.Iframe(srcDoc=map_html, width='100%', height='600px')
-    except Exception as e:
-        return html.Div(f"Error rendering heatmap: {str(e)}")
+    return dcc.Iframe(src="/assets/heatmap.html", width="100%", height="600")
 
 # Styled container
 container_style = {
