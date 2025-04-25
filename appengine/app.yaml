@@ -1,7 +1,11 @@
 runtime: python312
+instance_class: F4_1G
 automatic_scaling:
   target_cpu_utilization: 0.90
   max_instances: 1
-entrypoint: gunicorn -b :8080 webapp:server
+entrypoint: gunicorn -b :8080 webapp:server --timeout 120
 env_variables:
   BUCKET_NAME: 'cs163-final-project'
+  PROJECT_ID: 'cs163-final-project'
+  DATASET_ID: 'us_accident_data'
+  TABLE_ID: 'us_accidents'

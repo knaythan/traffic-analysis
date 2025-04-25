@@ -5,6 +5,7 @@ import folium
 import numpy as np
 from folium.plugins import HeatMap
 from google.cloud import storage
+from google.cloud import bigquery
 from io import StringIO
 import os
 
@@ -20,52 +21,142 @@ def get_csv_from_gcs(bucket_name, source_blob_name):
 app = Dash(__name__, suppress_callback_exceptions=True)
 server = app.server
 
-BUCKET_NAME = os.environ.get("BUCKET_NAME")
+# BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
-df = get_csv_from_gcs(BUCKET_NAME, "us_accidents_01.csv")
+# df = get_csv_from_gcs(BUCKET_NAME, "us_accidents_01.csv")
 
 # # df = df.sample(n=30000, random_state=42)
 
-# Reusable visual components
+client = bigquery.Client()
+PROJECT_ID = os.environ.get("PROJECT_ID")
+DATASET = os.environ.get("DATASET_ID")
+TABLE = os.environ.get("TABLE_ID")
+
 def severity_distribution():
+    query = f"""
+        SELECT Severity
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        WHERE Severity IS NOT NULL
+    """
+    df = client.query(query).to_dataframe()
     severity_counts = df["Severity"].value_counts().sort_index()
     fig = px.bar(x=severity_counts.index, y=severity_counts.values,
                  labels={'x': 'Severity Level', 'y': 'Number of Accidents'},
                  title='Accident Severity Distribution')
     return dcc.Graph(figure=fig)
 
+
 def feature_correlation():
-    corr_matrix = df.select_dtypes(include='number').corr()
+    query = f"""
+        SELECT
+            Severity,
+            `Temperature_F_`,
+            `Wind_Chill_F_`,
+            `Humidity_%_`,
+            `Pressure_in_`,
+            `Visibility_mi_`,
+            `Wind_Speed_mph_`,
+            `Precipitation_in_`
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        WHERE Severity IS NOT NULL
+        LIMIT 10000
+    """
+
+    df = client.query(query).to_dataframe()
+    corr_matrix = df.corr()
     fig = px.imshow(corr_matrix, text_auto=True,
                     color_continuous_scale='Viridis',
                     title='Feature Correlation Heatmap')
     return dcc.Graph(figure=fig)
 
+
 def precipitation_vs_severity():
-    fig = px.scatter(df, x="Precipitation(in)", y="Severity", log_x=True,
+    query = f"""
+        SELECT Precipitation_in_ AS Precipitation, Severity
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        WHERE Precipitation_in_ IS NOT NULL AND Severity IS NOT NULL
+        LIMIT 5000
+    """
+    df = client.query(query).to_dataframe()
+    fig = px.scatter(df, x="Precipitation", y="Severity", log_x=True,
                      title="Precipitation vs Severity (Log Scale)",
-                     labels={"Precipitation(in)": "Precipitation (in)", "Severity": "Severity"})
+                     labels={"Precipitation": "Precipitation (in)", "Severity": "Severity"})
     return dcc.Graph(figure=fig)
 
+
 def accidents_by_state():
+    query = f"""
+        SELECT State
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        WHERE State IS NOT NULL
+    """
+    df = client.query(query).to_dataframe()
     state_counts = df["State"].value_counts().sort_values(ascending=False)
     fig = px.bar(x=state_counts.index, y=state_counts.values,
                  labels={'x': 'State', 'y': 'Number of Accidents'},
                  title='Accident Distribution by State')
     return dcc.Graph(figure=fig)
 
+
 def accident_heatmap():
+    query = f"""
+        SELECT Start_Lat, Start_Lng
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        WHERE Start_Lat IS NOT NULL AND Start_Lng IS NOT NULL
+        LIMIT 5000
+    """
     try:
-        df_map = df[["Start_Lat", "Start_Lng"]].dropna()
-        if len(df_map) > 5000:
-            df_map = df_map.sample(n=5000, random_state=42)
-        heat_data = df_map.values.tolist()
+        df = client.query(query).to_dataframe()
+        heat_data = df[["Start_Lat", "Start_Lng"]].values.tolist()
         m = folium.Map(location=[37.8, -96], zoom_start=5, tiles="CartoDB Voyager")
         HeatMap(heat_data, radius=8, blur=4, max_zoom=10).add_to(m)
         map_html = m.get_root().render()
         return html.Iframe(srcDoc=map_html, width='100%', height='600px')
     except Exception as e:
         return html.Div(f"Error rendering heatmap: {str(e)}")
+
+
+
+# # Reusable visual components
+# def severity_distribution():
+#     severity_counts = df["Severity"].value_counts().sort_index()
+#     fig = px.bar(x=severity_counts.index, y=severity_counts.values,
+#                  labels={'x': 'Severity Level', 'y': 'Number of Accidents'},
+#                  title='Accident Severity Distribution')
+#     return dcc.Graph(figure=fig)
+
+# def feature_correlation():
+#     corr_matrix = df.select_dtypes(include='number').corr()
+#     fig = px.imshow(corr_matrix, text_auto=True,
+#                     color_continuous_scale='Viridis',
+#                     title='Feature Correlation Heatmap')
+#     return dcc.Graph(figure=fig)
+
+# def precipitation_vs_severity():
+#     fig = px.scatter(df, x="Precipitation(in)", y="Severity", log_x=True,
+#                      title="Precipitation vs Severity (Log Scale)",
+#                      labels={"Precipitation(in)": "Precipitation (in)", "Severity": "Severity"})
+#     return dcc.Graph(figure=fig)
+
+# def accidents_by_state():
+#     state_counts = df["State"].value_counts().sort_values(ascending=False)
+#     fig = px.bar(x=state_counts.index, y=state_counts.values,
+#                  labels={'x': 'State', 'y': 'Number of Accidents'},
+#                  title='Accident Distribution by State')
+#     return dcc.Graph(figure=fig)
+
+# def accident_heatmap():
+#     try:
+#         df_map = df[["Start_Lat", "Start_Lng"]].dropna()
+#         if len(df_map) > 5000:
+#             df_map = df_map.sample(n=5000, random_state=42)
+#         heat_data = df_map.values.tolist()
+#         m = folium.Map(location=[37.8, -96], zoom_start=5, tiles="CartoDB Voyager")
+#         HeatMap(heat_data, radius=8, blur=4, max_zoom=10).add_to(m)
+#         map_html = m.get_root().render()
+#         return html.Iframe(srcDoc=map_html, width='100%', height='600px')
+#     except Exception as e:
+#         return html.Div(f"Error rendering heatmap: {str(e)}")
     
 # def severity_distribution():
 #     return dcc.Iframe(src="/assets/severity.html", width="100%", height="600")
