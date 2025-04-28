@@ -23,7 +23,7 @@ server = app.server
 
 # BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
-# df = get_csv_from_gcs(BUCKET_NAME, "us_accidents_01.csv")
+# df = get_csv_from_gcs(BUCKET_NAME, "random_accidents.csv")
 
 # # df = df.sample(n=30000, random_state=42)
 
@@ -31,6 +31,10 @@ client = bigquery.Client()
 PROJECT_ID = os.environ.get("PROJECT_ID")
 DATASET = os.environ.get("DATASET_ID")
 TABLE = os.environ.get("TABLE_ID")
+
+PROJECT_ID = 'cs163-final-project' if PROJECT_ID is None else PROJECT_ID
+DATASET = 'us_accident_data' if DATASET is None else DATASET
+TABLE = 'us_accidents' if TABLE is None else TABLE
 
 def severity_distribution():
     query = f"""
@@ -45,7 +49,7 @@ def severity_distribution():
                  title='Accident Severity Distribution')
     return dcc.Graph(figure=fig)
 
-
+ 
 def feature_correlation():
     query = f"""
         SELECT
@@ -101,78 +105,22 @@ def accidents_by_state():
 def accident_heatmap():
     query = f"""
         SELECT Start_Lat, Start_Lng
-        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (10 PERCENT)
         WHERE Start_Lat IS NOT NULL AND Start_Lng IS NOT NULL
-        LIMIT 5000
     """
     try:
         df = client.query(query).to_dataframe()
+        
         heat_data = df[["Start_Lat", "Start_Lng"]].values.tolist()
         m = folium.Map(location=[37.8, -96], zoom_start=5, tiles="CartoDB Voyager")
-        HeatMap(heat_data, radius=8, blur=4, max_zoom=10).add_to(m)
+    
+        HeatMap(heat_data, radius=2, blur=2, max_zoom=10).add_to(m)
         map_html = m.get_root().render()
         return html.Iframe(srcDoc=map_html, width='100%', height='600px')
     except Exception as e:
         return html.Div(f"Error rendering heatmap: {str(e)}")
-
-
-
-# # Reusable visual components
-# def severity_distribution():
-#     severity_counts = df["Severity"].value_counts().sort_index()
-#     fig = px.bar(x=severity_counts.index, y=severity_counts.values,
-#                  labels={'x': 'Severity Level', 'y': 'Number of Accidents'},
-#                  title='Accident Severity Distribution')
-#     return dcc.Graph(figure=fig)
-
-# def feature_correlation():
-#     corr_matrix = df.select_dtypes(include='number').corr()
-#     fig = px.imshow(corr_matrix, text_auto=True,
-#                     color_continuous_scale='Viridis',
-#                     title='Feature Correlation Heatmap')
-#     return dcc.Graph(figure=fig)
-
-# def precipitation_vs_severity():
-#     fig = px.scatter(df, x="Precipitation(in)", y="Severity", log_x=True,
-#                      title="Precipitation vs Severity (Log Scale)",
-#                      labels={"Precipitation(in)": "Precipitation (in)", "Severity": "Severity"})
-#     return dcc.Graph(figure=fig)
-
-# def accidents_by_state():
-#     state_counts = df["State"].value_counts().sort_values(ascending=False)
-#     fig = px.bar(x=state_counts.index, y=state_counts.values,
-#                  labels={'x': 'State', 'y': 'Number of Accidents'},
-#                  title='Accident Distribution by State')
-#     return dcc.Graph(figure=fig)
-
-# def accident_heatmap():
-#     try:
-#         df_map = df[["Start_Lat", "Start_Lng"]].dropna()
-#         if len(df_map) > 5000:
-#             df_map = df_map.sample(n=5000, random_state=42)
-#         heat_data = df_map.values.tolist()
-#         m = folium.Map(location=[37.8, -96], zoom_start=5, tiles="CartoDB Voyager")
-#         HeatMap(heat_data, radius=8, blur=4, max_zoom=10).add_to(m)
-#         map_html = m.get_root().render()
-#         return html.Iframe(srcDoc=map_html, width='100%', height='600px')
-#     except Exception as e:
-#         return html.Div(f"Error rendering heatmap: {str(e)}")
     
-# def severity_distribution():
-#     return dcc.Iframe(src="/assets/severity.html", width="100%", height="600")
-
-# def feature_correlation():
-#     return dcc.Iframe(src="/assets/correlation.html", width="100%", height="600")
-
-# def precipitation_vs_severity():
-#     return dcc.Iframe(src="/assets/precipitation.html", width="100%", height="600")
-
-# def accidents_by_state():
-#     return dcc.Iframe(src="/assets/states.html", width="100%", height="600")
-
-# def accident_heatmap():
-#     return dcc.Iframe(src="/assets/heatmap.html", width="100%", height="600")    
-
+    
 # Styled container
 container_style = {
     'width': '85%',
