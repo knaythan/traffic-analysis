@@ -9,3 +9,4 @@ google-cloud-bigquery
 google-cloud-bigquery-storage
 folium
 db-dtypes
+holidays

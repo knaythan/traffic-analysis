@@ -289,6 +289,39 @@ def page():
             ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-between'}),
         ]),
         
+                # Monthly Accident Trend Analysis Section
+        html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
+            html.H2("Monthly Accident Trend Analysis", style={
+                'color': '#2D3748', 
+                'borderBottom': '2px solid #E2E8F0', 
+                'paddingBottom': '10px'
+            }),
+            
+            html.Div(style={
+                'padding': '25px',
+                'backgroundColor': '#EDF2F7',
+                'borderRadius': '10px',
+                'marginBottom': '25px',
+                'borderLeft': '5px solid #63B3ED',
+                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+            }, children=[
+                html.H3("Daily Accident Trends by Month", style={'color': '#3182CE', 'marginTop': '0'}),
+                html.P(
+                    "This interactive visualization allows you to explore how accident frequencies vary day-by-day across different months. "
+                    "Use the dropdown menu to select a specific month or view all months combined for comparison.",
+                    style={'fontSize': '16px', 'marginBottom': '20px'}
+                ),
+                accidents_by_month(),  # <-- Your new function here
+                html.Div(style={'marginTop': '15px'}, children=[
+                    html.P(
+                        "Analysis reveals noticeable spikes during holidays, weekends, and at month beginnings/endings. "
+                        "Understanding these patterns can help inform better traffic management and public safety campaigns.",
+                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
+                    )
+                ])
+            ]),
+        ]),
+        
         # Call to action
         html.Div(style={
             'textAlign': 'center',
