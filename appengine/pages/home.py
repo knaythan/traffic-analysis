@@ -14,7 +14,7 @@ def page():
             'marginBottom': '40px',
         }, children=[
             html.H1("U.S. Traffic Accident Analysis", style={
-                'fontSize': '42px',
+                'fontSize': '60px',
                 'fontWeight': '700',
                 'margin': '0 0 15px',
                 'color': '#1A365D',
@@ -71,7 +71,7 @@ def page():
                 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
                 'borderTop': '4px solid #3182CE',
             }, children=[
-                html.Div("7.7M+", style={'fontSize': '36px', 'fontWeight': '700', 'color': '#2B6CB0'}),
+                html.Div("7.0M+", style={'fontSize': '36px', 'fontWeight': '700', 'color': '#2B6CB0'}),
                 html.Div("Accident Records", style={'fontSize': '18px', 'color': '#4A5568', 'marginTop': '5px'}),
             ]),
             # Stat Card 2
@@ -85,7 +85,7 @@ def page():
                 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
                 'borderTop': '4px solid #38A169',
             }, children=[
-                html.Div("50+", style={'fontSize': '36px', 'fontWeight': '700', 'color': '#2F855A'}),
+                html.Div("25+", style={'fontSize': '36px', 'fontWeight': '700', 'color': '#2F855A'}),
                 html.Div("Environmental Factors", style={'fontSize': '18px', 'color': '#4A5568', 'marginTop': '5px'}),
             ]),
             # Stat Card 3
@@ -99,8 +99,8 @@ def page():
                 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
                 'borderTop': '4px solid #805AD5',
             }, children=[
-                html.Div("6 Years", style={'fontSize': '36px', 'fontWeight': '700', 'color': '#6B46C1'}),
-                html.Div("Historical Data", style={'fontSize': '18px', 'color': '#4A5568', 'marginTop': '5px'}),
+                html.Div("7 Years", style={'fontSize': '36px', 'fontWeight': '700', 'color': '#6B46C1'}),
+                html.Div("Historical Data (February 2016 - March 2023)", style={'fontSize': '18px', 'color': '#4A5568', 'marginTop': '5px'}),
             ]),
         ]),
         
@@ -113,161 +113,207 @@ def page():
             'marginBottom': '40px',
             'borderLeft': '5px solid #3182CE',
         }, children=[
-            html.H2("Project Overview", style={'color': '#2C5282', 'marginTop': '0', 'borderBottom': '2px solid #E2E8F0', 'paddingBottom': '10px'}),
+            html.H2("Project Significance", style={'color': '#2C5282', 'marginTop': '0', 'borderBottom': '2px solid #E2E8F0', 'paddingBottom': '10px'}),
             html.P(
-                "This comprehensive study analyzes over 7.7 million accident records using weather, road, and environmental data across the United States. "
-                "By combining exploratory data analysis with advanced machine learning techniques like Random Forests and XGBoost, "
-                "we uncover patterns that explain accident risk and severity.",
-                style={'fontSize': '18px', 'lineHeight': '1.6', 'marginBottom': '20px'}
+            "Traffic accidents are a leading cause of injuries, fatalities, and economic losses in the United States, with millions of incidents occurring annually. "
+            "This study provides critical insights to address these challenges by leveraging data-driven approaches to improve road safety, optimize emergency response, and inform urban planning.",
+            style={'fontSize': '18px', 'lineHeight': '1.6', 'marginBottom': '20px'}
             ),
+            html.Ul([
+            html.Li("Enhancing Road Safety: Identifying environmental, temporal, and road-related factors that contribute to accidents enables targeted interventions, such as improved lighting, signage, and road design.", 
+                style={'marginBottom': '10px'}),
+            html.Li("Optimizing Emergency Response: Predictive models help emergency services allocate resources effectively, reducing response times and saving lives.", 
+                style={'marginBottom': '10px'}),
+            html.Li("Informing Urban Planning: Geospatial analysis highlights accident hotspots, guiding infrastructure improvements like safer intersections and traffic calming measures.", 
+                style={'marginBottom': '10px'}),
+            html.Li("Supporting Autonomous Vehicles: Insights into accident risk factors enhance navigation algorithms, improving the safety of autonomous systems.", 
+                style={'marginBottom': '10px'}),
+            html.Li("Promoting Data-Driven Policy: Policymakers can implement targeted regulations and infrastructure upgrades based on the study’s findings.", 
+                style={'marginBottom': '10px'}),
+            ], style={'paddingLeft': '20px', 'fontSize': '18px', 'lineHeight': '1.6'}),
             html.P(
-                "Our research findings provide actionable insights that can help improve road safety, "
-                "inform urban planning decisions, optimize emergency response systems, and support the development of safer autonomous driving technologies.",
-                style={'fontSize': '18px', 'lineHeight': '1.6'}
+            "By addressing these areas, this research lays the foundation for reducing accidents, saving lives, and creating safer, more efficient transportation systems.",
+            style={'fontSize': '18px', 'lineHeight': '1.6'}
             ),
         ]),
 
         # Analysis Approach Section with cards
-        html.H2("Our Analysis Approach", style={
-            'textAlign': 'center', 
-            'color': '#2D3748', 
-            'marginBottom': '25px',
-            'fontSize': '32px',
-        }),
-        
+        # Analysis Approach Section with cards
+html.H2("Our Analysis Approach", style={
+    'textAlign': 'center', 
+    'color': '#2D3748', 
+    'marginBottom': '25px',
+    'fontSize': '32px',
+}),
+
+html.Div(style={
+    'display': 'flex',
+    'flexWrap': 'wrap',
+    'justifyContent': 'center',
+    'gap': '25px',
+    'marginBottom': '40px',
+}, children=[
+    # Card 1 - Statistical Analysis
+    html.Div(style={
+        'flex': '1',
+        'minWidth': '300px',
+        'maxWidth': '400px',
+        'borderRadius': '10px',
+        'overflow': 'hidden',
+        'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        'backgroundColor': 'white',
+        'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
+    }, children=[
+        # Card Header
         html.Div(style={
-            'display': 'flex',
-            'flexWrap': 'wrap',
-            'justifyContent': 'center',
-            'gap': '25px',
-            'marginBottom': '40px',
+            'backgroundColor': '#FEF5E7',
+            'padding': '25px 20px',
+            'borderBottom': '1px solid #FDEBD0',
         }, children=[
-            # Card 1 - Predictive Modeling
-            html.Div(style={
-                'flex': '1',
-                'minWidth': '300px',
-                'maxWidth': '400px',
-                'borderRadius': '10px',
-                'overflow': 'hidden',
-                'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                'backgroundColor': 'white',
-                'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
-            }, children=[
-                # Card Header
-                html.Div(style={
-                    'backgroundColor': '#EBF8FF',
-                    'padding': '25px 20px',
-                    'borderBottom': '1px solid #BEE3F8',
-                }, children=[
-                    html.Div("📊", style={'fontSize': '36px', 'textAlign': 'center', 'marginBottom': '10px'}),
-                    html.H3("Predictive Modeling", style={
-                        'margin': '0',
-                        'textAlign': 'center',
-                        'color': '#2C5282',
-                        'fontSize': '24px',
-                    }),
-                ]),
-                # Card Body
-                html.Div(style={
-                    'padding': '25px 20px',
-                }, children=[
-                    html.P(
-                        "We build sophisticated predictive models to estimate accident severity based on real-time conditions including weather, "
-                        "visibility, and road characteristics. Our ensemble machine learning techniques improve the accuracy and fairness of predictions.",
-                        style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
-                    ),
-                    html.Ul([
-                        html.Li("Random Forest classification", style={'margin': '8px 0'}),
-                        html.Li("XGBoost for severity prediction", style={'margin': '8px 0'}),
-                        html.Li("Feature importance analysis", style={'margin': '8px 0'}),
-                    ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
-                ]),
-            ]),
-            
-            # Card 2 - Geospatial Insights
-            html.Div(style={
-                'flex': '1',
-                'minWidth': '300px',
-                'maxWidth': '400px',
-                'borderRadius': '10px',
-                'overflow': 'hidden',
-                'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                'backgroundColor': 'white',
-                'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
-            }, children=[
-                # Card Header
-                html.Div(style={
-                    'backgroundColor': '#E6FFFA',
-                    'padding': '25px 20px',
-                    'borderBottom': '1px solid #B2F5EA',
-                }, children=[
-                    html.Div("🌎", style={'fontSize': '36px', 'textAlign': 'center', 'marginBottom': '10px'}),
-                    html.H3("Geospatial Insights", style={
-                        'margin': '0',
-                        'textAlign': 'center',
-                        'color': '#234E52',
-                        'fontSize': '24px',
-                    }),
-                ]),
-                # Card Body
-                html.Div(style={
-                    'padding': '25px 20px',
-                }, children=[
-                    html.P(
-                        "Using advanced clustering and heatmap visualizations, we identify accident hotspots across urban corridors and highway systems. "
-                        "Spatial patterns highlight where infrastructure interventions can most effectively reduce crash risk.",
-                        style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
-                    ),
-                    html.Ul([
-                        html.Li("DBSCAN spatial clustering", style={'margin': '8px 0'}),
-                        html.Li("Urban vs. rural pattern analysis", style={'margin': '8px 0'}),
-                        html.Li("Infrastructure correlation mapping", style={'margin': '8px 0'}),
-                    ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
-                ]),
-            ]),
-            
-            # Card 3 - Temporal Trends
-            html.Div(style={
-                'flex': '1',
-                'minWidth': '300px',
-                'maxWidth': '400px',
-                'borderRadius': '10px',
-                'overflow': 'hidden',
-                'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                'backgroundColor': 'white',
-                'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
-            }, children=[
-                # Card Header
-                html.Div(style={
-                    'backgroundColor': '#E9D8FD',
-                    'padding': '25px 20px',
-                    'borderBottom': '1px solid #D6BCFA',
-                }, children=[
-                    html.Div("⏳", style={'fontSize': '36px', 'textAlign': 'center', 'marginBottom': '10px'}),
-                    html.H3("Temporal Trends", style={
-                        'margin': '0',
-                        'textAlign': 'center',
-                        'color': '#44337A',
-                        'fontSize': '24px',
-                    }),
-                ]),
-                # Card Body
-                html.Div(style={
-                    'padding': '25px 20px',
-                }, children=[
-                    html.P(
-                        "By analyzing time-of-day, day-of-week, and seasonal patterns, we reveal how traffic volume and commuter behavior "
-                        "impact accident rates — emphasizing peak risk periods like rush hours and holidays.",
-                        style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
-                    ),
-                    html.Ul([
-                        html.Li("Time series decomposition", style={'margin': '8px 0'}),
-                        html.Li("Seasonal trend analysis", style={'margin': '8px 0'}),
-                        html.Li("Peak accident period identification", style={'margin': '8px 0'}),
-                    ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
-                ]),
-            ]),
+            html.H3("Statistical Testing", style={
+                'margin': '0',
+                'textAlign': 'center',
+                'color': '#7D6608',
+                'fontSize': '30px',
+            }),
         ]),
+        # Card Body
+        html.Div(style={
+            'padding': '25px 20px',
+        }, children=[
+            html.P(
+                "We applied rigorous statistical methods to validate relationships between variables and verify the significance of observed patterns in accident data.",
+                style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
+            ),
+            html.Ul([
+                html.Li("T-tests to compare means across groups", style={'margin': '8px 0'}),
+                html.Li("Chi-square tests for categorical associations", style={'margin': '8px 0'}),
+                html.Li("Correlation analysis between key features", style={'margin': '8px 0'}),
+            ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
+        ]),
+    ]),
+    
+    # Card 2 - Predictive Modeling
+    html.Div(style={
+        'flex': '1',
+        'minWidth': '300px',
+        'maxWidth': '400px',
+        'borderRadius': '10px',
+        'overflow': 'hidden',
+        'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        'backgroundColor': 'white',
+        'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
+    }, children=[
+        # Card Header
+        html.Div(style={
+            'backgroundColor': '#EBF8FF',
+            'padding': '25px 20px',
+            'borderBottom': '1px solid #BEE3F8',
+        }, children=[
+            html.H3("Predictive Modeling", style={
+                'margin': '0',
+                'textAlign': 'center',
+                'color': '#2C5282',
+                'fontSize': '30px',
+            }),
+        ]),
+        # Card Body
+        html.Div(style={
+            'padding': '25px 20px',
+        }, children=[
+            html.P(
+                "Our machine learning approach focuses on predicting accident severity using multiple techniques, with feature importance analysis to identify key risk factors.",
+                style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
+            ),
+            html.Ul([
+                html.Li("Random Forest classifier with feature importance", style={'margin': '8px 0'}),
+                html.Li("NLP-based label modeling (experimental)", style={'margin': '8px 0'}),
+                html.Li("Accident severity distribution analysis", style={'margin': '8px 0'}),
+            ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
+        ]),
+    ]),
+    
+    # Card 3 - Spatiotemporal Analysis
+    html.Div(style={
+        'flex': '1',
+        'minWidth': '300px',
+        'maxWidth': '400px',
+        'borderRadius': '10px',
+        'overflow': 'hidden',
+        'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        'backgroundColor': 'white',
+        'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
+    }, children=[
+        # Card Header
+        html.Div(style={
+            'backgroundColor': '#E6FFFA',
+            'padding': '25px 20px',
+            'borderBottom': '1px solid #B2F5EA',
+        }, children=[
+            html.H3("Spatiotemporal Analysis", style={
+                'margin': '0',
+                'textAlign': 'center',
+                'color': '#234E52',
+                'fontSize': '30px',
+            }),
+        ]),
+        # Card Body
+        html.Div(style={
+            'padding': '25px 20px',
+        }, children=[
+            html.P(
+                "By combining geospatial and temporal analyses, we identified how accident patterns vary across both location and time, revealing high-risk areas during specific time periods.",
+                style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
+            ),
+            html.Ul([
+                html.Li("Interactive Folium heatmaps", style={'margin': '8px 0'}),
+                html.Li("Hourly accident trend visualization", style={'margin': '8px 0'}),
+                html.Li("Time of day and location correlation", style={'margin': '8px 0'}),
+                html.Li("Geographic accident hotspot identification", style={'margin': '8px 0'}),
+            ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
+        ]),
+    ]),
+    
+    # Card 4 - Feature Analysis
+    html.Div(style={
+        'flex': '1',
+        'minWidth': '300px',
+        'maxWidth': '400px',
+        'borderRadius': '10px',
+        'overflow': 'hidden',
+        'boxShadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        'backgroundColor': 'white',
+        'transition': 'transform 0.3s ease, box-shadow 0.3s ease',
+    }, children=[
+        # Card Header
+        html.Div(style={
+            'backgroundColor': '#FEEBC8',
+            'padding': '25px 20px',
+            'borderBottom': '1px solid #FBD38D',
+        }, children=[
+            html.H3("Feature Analysis", style={
+                'margin': '0',
+                'textAlign': 'center',
+                'color': '#7B341E',
+                'fontSize': '30px',
+            }),
+        ]),
+        # Card Body
+        html.Div(style={
+            'padding': '25px 20px',
+        }, children=[
+            html.P(
+                "We identified the most influential factors in accident occurrence and severity through comprehensive feature analysis and correlation studies.",
+                style={'lineHeight': '1.7', 'color': '#4A5568', 'fontSize': '16px'}
+            ),
+            html.Ul([
+                html.Li("Feature importance from Random Forest", style={'margin': '8px 0'}),
+                html.Li("Correlation heatmap visualization", style={'margin': '8px 0'}),
+                html.Li("Multi-factor interaction analysis", style={'margin': '8px 0'}),
+            ], style={'paddingLeft': '20px', 'color': '#4A5568', 'marginTop': '15px'})
+        ]),
+    ]),
+]),
         
         # Call to Action Section
         html.Div(style={
