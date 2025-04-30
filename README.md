@@ -29,8 +29,8 @@ Our goal is to investigate how environmental, temporal, and road network conditi
 Clone the repo and install required packages:
 
 ```bash
-git clone https://github.com/your-username/traffic-analysis-dashboard.git
-cd traffic-analysis-dashboard
+git clone https://github.com/your-username/traffic-analysis.git
+cd traffic-analysis
 python -m venv env
 source env/bin/activate  # On Windows: .\env\Scripts\activate
 pip install -r requirements.txt
