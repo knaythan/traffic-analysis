@@ -1,128 +1,121 @@
-I'll create a comprehensive README.md that captures the essence of the project while providing clear, concise information:
 
-```markdown
 # U.S. Traffic Accident Analysis Dashboard
 
-## Project Overview
+This is the official repository for **"Predictive Analytics for Safer Roads"**, a CS 163 final project by Shervan Shahparnia and Nathan Cohn. We analyze 7.7 million U.S. traffic accident records to identify risk factors, develop predictive models, and present our findings in an interactive web dashboard.
 
-This data science project analyzes 7.7 million traffic accident records to uncover critical insights into accident patterns, severity, and risk factors across the United States. Utilizing advanced machine learning and statistical techniques, we've developed an interactive web dashboard that visualizes key findings to support road safety initiatives.
+🔗 **Live Website**: [https://cs163-final-project.wl.r.appspot.com/home](https://cs163-final-project.wl.r.appspot.com/home)
 
-## Project Website
-[Traffic Accident Research Dashboard](https://cs163-final-project.web.app)
+---
 
-## Key Features
+## 📌 Project Overview
 
-- 📊 Comprehensive analysis of traffic accident data
-- 🌍 Geospatial risk mapping
-- 🔍 Machine learning predictive modeling
-- 📈 Interactive data visualizations
-- 🌦️ Environmental factor impact assessment
+Our goal is to investigate how environmental, temporal, and road network conditions affect the **severity of traffic accidents**. We:
+- Perform statistical testing and feature analysis
+- Train machine learning models (Random Forests, Neural Networks)
+- Visualize spatiotemporal patterns
+- Deploy the results in an interactive Dash web application
 
-## Repository Structure
+---
 
-```
-traffic-analysis/
-│
-├── appengine/                 # Web application deployment
-│   ├── pages/                 # Individual page components
-│   ├── components/            # Reusable UI components
-│   ├── styles/                # Styling and layout configurations
-│   ├── visuals/               # Data visualization scripts
-│   └── webapp.py              # Main Dash application
-│
-├── model/                     # Machine learning modeling
-│   ├── model.py               # Core ML model development
-│   └── EDAvisual.ipynb        # Exploratory data analysis notebook
-│
-├── data/                      # Dataset and preprocessing
-│   └── us_accidents.csv       # Primary dataset
-│
-├── requirements.txt           # Python package dependencies
-└── app.yaml                   # Google App Engine configuration
-```
+## ⚙️ Setup Instructions
 
-## Technical Pipeline
+### 🔧 Prerequisites
+- Python 3.8+
+- Google Cloud SDK (for deployment)
+- `pip install -r requirements.txt`
 
-1. **Data Collection**
-   - Source: Kaggle US Accidents Dataset (2016-2023)
-   - 7.7 million records with 40+ features
-   - Real-time traffic API integration
-
-2. **Data Preprocessing**
-   - Feature engineering
-   - Handling missing values
-   - Categorical encoding
-   - Scaling and normalization
-
-3. **Exploratory Data Analysis**
-   - Statistical correlation analysis
-   - Feature importance extraction
-   - Temporal and spatial pattern identification
-
-4. **Machine Learning Modeling**
-   - Random Forest Classifier
-   - Neural Network Severity Prediction
-   - Balanced and imbalanced dataset training
-   - Performance metrics evaluation
-
-5. **Visualization & Deployment**
-   - Dash-based interactive dashboard
-   - Plotly and Folium visualizations
-   - Google App Engine hosting
-
-## Setup Instructions
-
-### Prerequisites
-- Python 3.9+
-- Google Cloud SDK
-- Virtual environment recommended
-
-### Installation
+### 🗂️ Install Dependencies
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/traffic-analysis.git
-cd traffic-analysis
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Set up Google Cloud credentials
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials.json"
 ```
 
-## Running the Application
-
+### ▶️ Run Locally
 ```bash
-# Local development
-python appengine/webapp.py
+python webapp.py
+```
 
-# Deploy to Google App Engine
+### ☁️ Deploy to Google App Engine
+```bash
 gcloud app deploy
 ```
 
-## Authors
-- Shervan Shahparnia
-- Nathan Cohn
+---
 
-## Technologies Used
-- Python
-- Dash
-- Plotly
-- Scikit-learn
-- PyTorch
-- Google BigQuery
-- Folium
+## 🔄 Project Pipeline
 
-## License
-MIT License
-
-## Acknowledgments
-- Ohio State University Accident Dataset Researchers
-- Kaggle Community
+```mermaid
+graph TD;
+    A[Data Collection] --> B[Cleaning & Feature Engineering]
+    B --> C[Statistical Testing]
+    C --> D[Model Training (ML, NN)]
+    D --> E[Evaluation & Visualization]
+    E --> F[Web Dashboard Deployment]
 ```
 
-Would you like me to modify anything about the README?
+### Step-by-Step:
+1. **Data Collection**: Raw accident data from BigQuery (2016–2023).
+2. **Cleaning & Engineering**: Preprocessing includes scaling, TF-IDF, one-hot encoding, and highway feature extraction.
+3. **Statistical Testing**: T-tests, chi-squared, correlation to validate feature importance.
+4. **Modeling**:
+   - Binary classification (Low vs. High Severity) using Random Forest
+   - 4-class prediction using a PyTorch Neural Network
+5. **Visualization**: Interactive visualizations with Plotly and Folium
+6. **Deployment**: Dash app hosted on Google App Engine
+
+---
+
+## 🗃️ Repository Structure
+
+```plaintext
+.
+├── appengine/
+│   ├── components/            # UI components (e.g. navbar)
+│   ├── pages/                 # Dash pages: home, methods, findings, objectives
+│   ├── styles/                # CSS styling in Python dicts
+│   ├── visuals/               # All visualizations and analytics (plots, maps, charts)
+│   └── assets/                # Static images or figures (if used)
+│
+├── model/                     # Machine learning models and evaluation logic
+│   └── model.py               # Structured + unstructured feature modeling (PyTorch + sklearn)
+│
+├── webapp.py                  # Main Dash app entry point
+├── requirements.txt           # Python dependencies
+├── app.yaml                   # GCP deployment config
+└── data/                      # (Optional) Raw and processed datasets (local use)
+```
+
+---
+
+## 📁 Key Files
+
+| File/Dir                       | Description |
+|-------------------------------|-------------|
+| `webapp.py`                   | Launches the Dash web app |
+| `appengine/pages/`           | Pages: `home.py`, `methods.py`, `objectives.py`, `findings.py` |
+| `appengine/visuals/analysis.py` | All Dash charts, maps, and visual logic |
+| `model/model.py`              | ML models: TF-IDF + PyTorch NN, Random Forests, feature engineering |
+| `requirements.txt`            | List of Python packages |
+| `app.yaml`                    | App Engine configuration for deployment |
+
+---
+
+## 🔍 Key Features
+
+- **ML & NLP**: Combines TF-IDF vectorization with structured feature scaling
+- **Visualizations**: Folium maps, confusion matrices, bar charts, correlations
+- **Balanced Training**: Downsampling used to address class imbalance
+- **Spatiotemporal Risk Mapping**: Interactive severity risk map with zoom filtering
+- **Fully Deployed**: Website live on Google Cloud
+
+---
+
+## 👨‍💻 Authors
+
+- **Shervan Shahparnia**  
+- **Nathan Cohn**
+
+---
+
+## 🏁 License
+
+This project is for educational use as part of San José State University's CS 163 course.
