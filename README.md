@@ -17,7 +17,7 @@ Our goal is to investigate how environmental, temporal, and road network conditi
 
 ---
 
-## ⚙Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Python 3.8+
