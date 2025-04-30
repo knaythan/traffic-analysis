@@ -39,6 +39,7 @@ pip install -r requirements.txt
 ### Run Locally
 
 ```bash
+cd appengine/
 python webapp.py
 ```
 
@@ -96,23 +97,32 @@ gcloud config set project [YOUR_PROJECT_ID]
 ---
 
 ## Repository Structure
-
 ```plaintext
 .
 ├── appengine/
-│   ├── components/            # UI components (e.g. navbar)
-│   ├── pages/                 # Dash pages: home, methods, findings, objectives
-│   ├── styles/                # CSS styling in Python dicts
-│   ├── visuals/               # All visualizations and analytics (plots, maps, charts)
-│   └── assets/                # Static images or figures (if used)
+│   ├── components/
+│   │   └── navbar.py              # Reusable navigation bar across all pages
+│   ├── assets/
+│   │   └── Figure_1.png           # Non-Balanced Train/Test Confusion Matrix
+│   │   ├── Figure_2.png           # Balanced Train/Test Confusion Matrix
+│   │   └── Figure_4.png           # Feature Importance Random Forest
+│   ├── pages/
+│   │   ├── home.py                # Homepage content
+│   │   ├── methods.py             # Methodology and data analysis workflow
+│   │   ├── findings.py            # Main research findings and visualizations
+│   │   └── objectives.py          # Project goals and broader impact
+│   ├── styles/
+│   │   └── styles.py              # Styling (colors, spacing, layout dicts)
+│   ├── visuals/
+│   │   └── analysis.py            # Plotly/Folium visualization functions
+│   ├── webapp.py                  # Main Dash entry point
+│   ├── requirements.txt          # Project dependencies
+│   └── app.yaml                  # Google App Engine deployment config
 │
-├── model/                     # Machine learning models and evaluation logic
-│   └── model.py               # Structured + unstructured feature modeling (PyTorch + sklearn)
+├── model/
+│   └── model.py                   # PyTorch + sklearn ML pipeline, feature extraction
 │
-├── webapp.py                  # Main Dash app entry point
-├── requirements.txt           # Python dependencies
-├── app.yaml                   # GCP deployment config
-└── data/                      # (Optional) Raw and processed datasets (local use)
+└── data/                          # (Optional) Sample processed datasets
 ```
 
 ---
@@ -121,7 +131,7 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 | File/Dir                       | Description |
 |-------------------------------|-------------|
-| `webapp.py`                   | Launches the Dash web app |
+| `appengine/webapp.py`                   | Launches the Dash web app |
 | `appengine/pages/`           | Pages: `home.py`, `methods.py`, `objectives.py`, `findings.py` |
 | `appengine/visuals/analysis.py` | All Dash charts, maps, and visual logic |
 | `model/model.py`              | ML models: TF-IDF + PyTorch NN, Random Forests, feature engineering |
@@ -132,11 +142,14 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ## Key Features
 
-- **ML & NLP**: Combines TF-IDF vectorization with structured feature scaling
-- **Visualizations**: Folium maps, confusion matrices, bar charts, correlations
-- **Balanced Training**: Downsampling used to address class imbalance
-- **Spatiotemporal Risk Mapping**: Interactive severity risk map with zoom filtering
-- **Fully Deployed**: Website live on Google Cloud
+- **Hybrid Modeling Approach**: Combines structured features (weather, time, road) and unstructured text (accident descriptions) for prediction.
+- **TF-IDF + PyTorch NN**: Uses TF-IDF for textual feature extraction and a custom PyTorch neural network for multiclass classification.
+- **Random Forest Baseline**: Interpretable, traditional model used to rank feature importance and compare performance.
+- **Statistical Validation**: Chi-squared tests, t-tests, and correlation heatmaps validate feature relevance before modeling.
+- **Interactive Visualizations**: Includes bar charts, scatter plots, confusion matrices, and Folium-based geographic heatmaps.
+- **Spatiotemporal Risk Mapping**: Enables exploration of severity by location and time with dynamic granularity controls.
+- **Modular Dash Layout**: Each section of the site (Home, Objectives, Methods, Findings) is rendered via individual Dash pages.
+- **Cloud Deployment**: Fully deployed to Google Cloud Platform using App Engine, with configuration managed by `app.yaml`.
 
 ---
 
