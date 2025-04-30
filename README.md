@@ -194,6 +194,7 @@ traffic-analysis/
 | `model/model.py`              | ML models: TF-IDF + PyTorch NN, Random Forests, feature engineering |
 | `requirements.txt`            | List of Python packages |
 | `app.yaml`                    | App Engine configuration for deployment |
+| `us_accidents.csv`            | Dataset from Kaggle renamed to "us_accidents.csv" | 
 
 ---
 
