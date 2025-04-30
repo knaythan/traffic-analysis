@@ -5,52 +5,58 @@ from components.navbar import navbar
 def page():
     return html.Div(style=container_style, children=[
         # Hero Section with visual impact
-        html.Div(style={
-            'textAlign': 'center',
-            'padding': '40px 20px',
-            'borderRadius': '10px',
-            'background': 'linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%)',
-            'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            'marginBottom': '40px',
-        }, children=[
-            html.H1("U.S. Traffic Accident Analysis", style={
-                'fontSize': '60px',
-                'fontWeight': '700',
-                'margin': '0 0 15px',
-                'color': '#1A365D',
-                'textShadow': '1px 1px 2px rgba(0,0,0,0.1)',
-            }),
-            html.H2("Predictive Analytics for Safer Roads", style={
-                'fontSize': '28px',
-                'fontWeight': '600',
-                'margin': '0 0 25px',
-                'color': '#2C5282',
-            }),
-            html.P(
-                "Investigating how environmental, temporal, and road network factors influence the severity and frequency of traffic accidents across the United States.",
-                style={
-                    'fontSize': '20px',
-                    'maxWidth': '800px',
-                    'margin': '0 auto 30px',
-                    'lineHeight': '1.6',
-                    'color': '#2D3748',
-                }
-            ),
-            html.A("Explore Our Findings →", 
-                  href="/findings", 
-                  style={
-                      'padding': '14px 28px',
-                      'backgroundColor': '#4299E1',
-                      'color': 'white',
-                      'borderRadius': '6px',
-                      'textDecoration': 'none',
-                      'fontWeight': '600',
-                      'boxShadow': '0 4px 6px rgba(66, 153, 225, 0.3)',
-                      'transition': 'all 0.2s ease',
-                      'display': 'inline-block',
-                      'fontSize': '18px',
-                  })
-        ]),
+html.Div(style={
+    'textAlign': 'center',
+    'padding': '40px 20px',
+    'borderRadius': '10px',
+    'background': 'linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%)',
+    'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+    'marginBottom': '40px',
+}, children=[
+    html.H1("U.S. Traffic Accident Analysis", style={
+        'fontSize': '60px',
+        'fontWeight': '700',
+        'margin': '0 0 15px',
+        'color': '#1A365D',
+        'textShadow': '1px 1px 2px rgba(0,0,0,0.1)',
+    }),
+    html.H2("Predictive Analytics for Safer Roads", style={
+        'fontSize': '28px',
+        'fontWeight': '600',
+        'margin': '0 0 10px',
+        'color': '#2C5282',
+    }),
+    html.Div("By Shervan Shahparnia & Nathan Cohn", style={
+        'fontSize': '20px',
+        'fontWeight': '500',
+        'margin': '0 0 25px',
+        'color': '#4A5568',
+    }),
+    html.P(
+        "Investigating how environmental, temporal, and road network factors influence the severity and frequency of traffic accidents across the United States.",
+        style={
+            'fontSize': '20px',
+            'maxWidth': '800px',
+            'margin': '0 auto 30px',
+            'lineHeight': '1.6',
+            'color': '#2D3748',
+        }
+    ),
+    html.A("Explore Our Findings →", 
+          href="/findings", 
+          style={
+              'padding': '14px 28px',
+              'backgroundColor': '#4299E1',
+              'color': 'white',
+              'borderRadius': '6px',
+              'textDecoration': 'none',
+              'fontWeight': '600',
+              'boxShadow': '0 4px 6px rgba(66, 153, 225, 0.3)',
+              'transition': 'all 0.2s ease',
+              'display': 'inline-block',
+              'fontSize': '18px',
+          })
+]),
 
         # Key Stats Section
         html.Div(style={

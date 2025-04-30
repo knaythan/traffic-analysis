@@ -18,7 +18,7 @@ app.layout = html.Div([
         fullscreen=True,
         children=html.Div(id='page-content')
     ),
-    html.Div("© 2025 Traffic Accident Research Dashboard", style=footer_style)
+    html.Div("© 2025 Traffic Accident Research Dashboard | Shervan Shahparnia & Nathan Cohn", style=footer_style)
 ])
 
 @callback(Output('page-content', 'children'), Input('url', 'pathname'))
