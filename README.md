@@ -99,6 +99,7 @@ gcloud config set project [YOUR_PROJECT_ID]
 ## Repository Structure
 ```plaintext
 .
+traffic-analysis/
 ├── appengine/
 │   ├── components/
 │   │   └── navbar.py              # Reusable navigation bar across all pages
