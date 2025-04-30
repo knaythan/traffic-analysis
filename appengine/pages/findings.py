@@ -17,7 +17,7 @@ from visuals.analysis import (
     weather_condition_counts,
     predictive_feature_importance,
     accidents_by_month,
-    model_confusion_matrix,
+    model_performance_visualization,
     generate_risk_map_visualization
 )
 
@@ -49,37 +49,37 @@ def page():
         
         # Overview Section with gradient background
         html.Div(style={
-            **section_style, 
-            'backgroundColor': '#EBF8FF', 
-            'borderLeft': '5px solid #3182CE', 
-            'padding': '25px 30px',
-            'borderRadius': '10px',
-            'marginBottom': '35px',
-        }, children=[
-            html.H2("Key Insights Summary", style={'color': '#2C5282', 'marginTop': '0'}),
-            html.P(
-                "Our comprehensive analysis of 7.7 million traffic accidents revealed several critical findings:",
-                style={'fontSize': '18px', 'marginBottom': '20px'}
-            ),
-            html.Ul([
-                html.Li([
-                    html.Strong("Environmental impacts on safety: "), 
-                    "Reduced visibility and precipitation significantly affect accident severity, with visibility showing a moderate negative correlation with humidity (-0.41)."
-                ], style={'margin': '10px 0', 'fontSize': '16px'}),
-                html.Li([
-                    html.Strong("Infrastructure significance: "), 
-                    "Road features like traffic signals, junctions and highway characteristics showed strong statistical associations with accident outcomes, suggesting infrastructure improvements could have substantial safety benefits."
-                ], style={'margin': '10px 0', 'fontSize': '16px'}),
-                html.Li([
-                    html.Strong("Geographic patterns: "), 
-                    "California, Florida, and Texas experience the highest accident volumes, with urban centers showing distinct accident hotspots regardless of region."
-                ], style={'margin': '10px 0', 'fontSize': '16px'}),
-                html.Li([
-                    html.Strong("Predictive modeling success: "), 
-                    "Our machine learning approaches achieved up to 89% accuracy in predicting severity outcomes, with gradient boosting methods performing particularly well."
-                ], style={'margin': '10px 0', 'fontSize': '16px'}),
-            ], style={'paddingLeft': '20px', 'color': '#2D3748'})
-        ]),
+    **section_style, 
+    'backgroundColor': '#EBF8FF', 
+    'borderLeft': '5px solid #3182CE', 
+    'padding': '25px 30px',
+    'borderRadius': '10px',
+    'marginBottom': '35px',
+}, children=[
+    html.H2("Key Insights Summary", style={'color': '#2C5282', 'marginTop': '0'}),
+    html.P(
+        "Our comprehensive analysis of 7.7 million traffic accidents revealed several critical findings:",
+        style={'fontSize': '18px', 'marginBottom': '20px'}
+    ),
+    html.Ul([
+        html.Li([
+            html.Strong("Environmental impacts on safety: "), 
+            "Pressure, temperature, and humidity emerge as the most influential environmental factors, with significant correlations to accident severity."
+        ], style={'margin': '10px 0', 'fontSize': '16px'}),
+        html.Li([
+            html.Strong("Model Performance: "), 
+            "Random Forest models demonstrated varying performance between balanced and non-balanced datasets, with accuracy ranging from 62% to 74%."
+        ], style={'margin': '10px 0', 'fontSize': '16px'}),
+        html.Li([
+            html.Strong("Feature Importance: "), 
+            "The top three features (Pressure, Temperature, Humidity) account for the majority of the model's predictive capability."
+        ], style={'margin': '10px 0', 'fontSize': '16px'}),
+        html.Li([
+            html.Strong("Severity Distribution: "), 
+            "Most accidents fall into the moderate severity range (levels 2-3), with severity level 2 accounting for approximately 70% of recorded incidents."
+        ], style={'margin': '10px 0', 'fontSize': '16px'}),
+    ], style={'paddingLeft': '20px', 'color': '#2D3748'})
+]),
         
         # Severity Distribution Section
         html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
@@ -129,7 +129,7 @@ def page():
                     "Our machine learning models can effectively predict accident severity level based on environmental and road factors:",
                     style={'fontSize': '16px', 'marginBottom': '20px'}
                 ),
-                model_confusion_matrix(),
+                model_performance_visualization(),
                 html.Div(style={'marginTop': '15px'}, children=[
                     html.P(
                         "The confusion matrix demonstrates our model's strong predictive capabilities, "
@@ -182,13 +182,20 @@ def page():
                 ),
                 severity_by_weather_conditions(),
                 html.Div(style={'marginTop': '15px'}, children=[
-                    html.P(
-                        "While clear weather accounts for the majority of accidents overall, adverse conditions like "
-                        "heavy rain, fog, and snow show higher proportions of severe accidents. This highlights the need "
-                        "for weather-specific safety interventions and driver awareness campaigns.",
-                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
-                    )
-                ])
+                html.P(
+                    "While most accidents occur during clear or fair weather, adverse conditions such as light snow, overcast skies, "
+                    "and fog show noticeably higher proportions of severe accidents (Severity 3 and 4). These patterns suggest that "
+                    "even though rare, poor weather significantly increases accident severity. This underlines the importance of "
+                    "weather-responsive safety policies and heightened driver caution during these conditions. ",
+                    style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
+                ),
+                html.P(
+                    "Interestingly, clear, overcast, and scattered cloud conditions are associated with the most severe accidents overall, "
+                    "not necessarily because they are more dangerous, but because they occur more often. In contrast, rain and snow may prompt "
+                    "drivers to slow down and drive more cautiously, reducing the severity of accidents despite the riskier road conditions.",
+                    style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
+                )
+             ])
             ]),
             
             
@@ -201,31 +208,6 @@ def page():
                 'borderBottom': '2px solid #E2E8F0', 
                 'paddingBottom': '10px'
             }),
-            
-            # NEW: Severity by Road Feature
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#FFF5F7',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #D53F8C',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }, children=[
-                html.H3("Road Features Impact on Severity", style={'color': '#B83280', 'marginTop': '0'}),
-                html.P(
-                    "Analysis of how different road features affect the severity of traffic accidents:",
-                    style={'fontSize': '16px', 'marginBottom': '20px'}
-                ),
-                severity_by_road_feature(),
-                html.Div(style={'marginTop': '15px'}, children=[
-                    html.P(
-                        "Certain road features consistently increase accident severity, with junctions, railway crossings, and "
-                        "traffic signals showing the strongest effects. Understanding these relationships enables targeted "
-                        "infrastructure improvements that could significantly reduce accident severity.",
-                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
-                    )
-                ])
-            ]),
             
             # NEW: Highway Severity Analysis
             html.Div(style={
@@ -339,7 +321,7 @@ def page():
                 ])
             ]),
 
-# Heatmap Card
+        # Heatmap Card
             html.Div(style={
                 'padding': '25px',
                 'backgroundColor': '#F7FAFC',
@@ -367,30 +349,6 @@ def page():
             ]),
         ]),
         
-        # Predictive Modeling Section
-        html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
-            html.H2("Predictive Model Insights", style={
-                'color': '#2D3748', 
-                'borderBottom': '2px solid #E2E8F0', 
-                'paddingBottom': '10px'
-            }),
-            
-            # NEW: Predictive Feature Importance
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#F0FFF4',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #38A169',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }, children=[
-                html.H3("Key Factors Driving Accident Severity", style={'color': '#2F855A', 'marginTop': '0'}),
-                html.P(
-                    "Our machine learning models identified the most influential factors for accident severity:",
-                    style={'fontSize': '16px', 'marginBottom': '20px'}
-                ),
-                predictive_feature_importance()
-            ]),
             
             # Predictive Model Insights
             html.Div([
@@ -475,90 +433,91 @@ def page():
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
             ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-between'}),
-        ]),
+        
+
         
         # Conclusions Section
-        html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
-            html.H2("Research Conclusions", style={
-                'color': '#2D3748', 
-                'borderBottom': '2px solid #E2E8F0', 
-                'paddingBottom': '10px'
-            }),
-            
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#FFFCEB',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #ECC94B',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }, children=[
-                html.H3("Key Takeaways", style={'color': '#B7791F', 'marginTop': '0'}),
-                html.P(
-                    "Our comprehensive analysis yielded several important conclusions with significant implications for traffic safety:",
-                    style={'fontSize': '16px', 'marginBottom': '20px'}
-                ),
-                html.Ol([
-                    html.Li([
-                        html.Strong("Multi-factor accident causality: "), 
-                        html.Span("Our analysis confirms that traffic accidents stem from complex interactions between weather conditions, road infrastructure, "
-                        "temporal factors, and geographical variables. Effective prevention strategies must address multiple risk factors simultaneously.")
-                    ], style={'margin': '12px 0', 'fontSize': '16px'}),
-                    html.Li([
-                        html.Strong("Predictable risk patterns: "), 
-                        html.Span("The high accuracy of our predictive models (up to 89%) demonstrates that accident severity follows predictable patterns. "
-                        "This suggests that targeted interventions based on identified risk factors could significantly reduce both accident frequency and severity.")
-                    ], style={'margin': '12px 0', 'fontSize': '16px'}),
-                    html.Li([
-                        html.Strong("Infrastructure impact: "), 
-                        html.Span("Road design elements (junctions, traffic signals, highway interchanges) showed stronger associations with accident severity than weather conditions. "
-                        "This indicates that infrastructure improvements may offer more reliable safety benefits than weather-dependent interventions.")
-                    ], style={'margin': '12px 0', 'fontSize': '16px'}),
-                    html.Li([
-                        html.Strong("Temporal targeting opportunity: "), 
-                        html.Span("The clear temporal patterns identified in accident frequency and severity (time of day, day of week, holidays) provide a framework "
-                        "for more efficient resource allocation in traffic safety initiatives and emergency response planning.")
-                    ], style={'margin': '12px 0', 'fontSize': '16px'}),
-                ], style={'paddingLeft': '20px', 'color': '#2D3748'})
-            ]),
-        ]),
-        
-        # Call to action
-        html.Div(style={
-            'textAlign': 'center',
-            'padding': '40px 20px',
-            'borderRadius': '10px',
-            'background': 'linear-gradient(135deg, #EBF8FF 0%, #90CDF4 100%)',
-            'marginTop': '30px',
-        }, children=[
-            html.H2("Ready to Explore Our Methodology?", style={
-                'color': '#2A4365',
-                'marginTop': '0',
-                'marginBottom': '20px',
-                'fontSize': '32px',
-            }),
-            html.P(
-                "Learn about the advanced analytical approaches we used to extract these valuable insights.",
-                style={
-                    'maxWidth': '800px',
-                    'margin': '0 auto 30px',
-                    'fontSize': '18px',
-                    'color': '#2D3748',
-                    'lineHeight': '1.6',
-                }
-            ),
-            html.A("View Research Methodology →", 
-                  href="/methods", 
-                  style={
-                      'padding': '14px 28px',
-                      'backgroundColor': '#4299E1',
-                      'color': 'white',
-                      'borderRadius': '6px',
-                      'textDecoration': 'none',
-                      'fontWeight': '600',
-                      'boxShadow': '0 4px 6px rgba(66, 153, 225, 0.3)',
-                      'transition': 'all 0.2s ease',
-                      'display': 'inline-block',
-                  })
-        ]),
+            html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
+                html.H2("Research Conclusions", style={
+                    'color': '#2D3748', 
+                    'borderBottom': '2px solid #E2E8F0', 
+                    'paddingBottom': '10px'
+                }),
+                
+                html.Div(style={
+                    'padding': '25px',
+                    'backgroundColor': '#FFFCEB',
+                    'borderRadius': '10px',
+                    'marginBottom': '25px',
+                    'borderLeft': '5px solid #ECC94B',
+                    'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+                }, children=[
+                    html.H3("Key Takeaways", style={'color': '#B7791F', 'marginTop': '0'}),
+                    html.P(
+                        "Our comprehensive analysis of 7.7 million traffic accidents reveals critical insights into road safety:",
+                        style={'fontSize': '16px', 'marginBottom': '20px'}
+                    ),
+                    html.Ol([
+                        html.Li([
+                            html.Strong("Severity Distribution: "), 
+                            html.Span("Most accidents fall in the moderate severity range (Level 2), accounting for approximately 70% of incidents. This suggests that targeted interventions could significantly impact the most common accident types.")
+                        ], style={'margin': '12px 0', 'fontSize': '16px'}),
+                        html.Li([
+                            html.Strong("Environmental Influences: "), 
+                            html.Span("Weather conditions play a crucial role in accident dynamics. While clear weather accounts for 46.5% of accidents, adverse conditions like light snow and fog show disproportionately higher severe accident rates.")
+                        ], style={'margin': '12px 0', 'fontSize': '16px'}),
+                        html.Li([
+                            html.Strong("Temporal Patterns: "), 
+                            html.Span("Rush hours (7-9 AM and 4-6 PM) demonstrate significant accident spikes, highlighting critical periods for traffic management and emergency preparedness.")
+                        ], style={'margin': '12px 0', 'fontSize': '16px'}),
+                        html.Li([
+                            html.Strong("Geographical Insights: "), 
+                            html.Span("Accident density correlates strongly with urban centers and interstate corridors, with Eastern and Western coastal regions showing substantially higher accident concentrations.")
+                        ], style={'margin': '12px 0', 'fontSize': '16px'}),
+                        html.Li([
+                            html.Strong("Predictive Modeling: "), 
+                            html.Span("Random Forest models revealed nuanced performance, with accuracies ranging from 62% to 74%. Pressure, temperature, and humidity emerged as the most influential predictive features.")
+                        ], style={'margin': '12px 0', 'fontSize': '16px'}),
+                    ], style={'paddingLeft': '20px', 'color': '#2D3748'})
+                ]),
+
+                # Call to action
+                html.Div(style={
+                    'textAlign': 'center',
+                    'padding': '40px 20px',
+                    'borderRadius': '10px',
+                    'background': 'linear-gradient(135deg, #EBF8FF 0%, #90CDF4 100%)',
+                    'marginTop': '30px',
+                }, children=[
+                    html.H2("Ready to Explore Our Methodology?", style={
+                        'color': '#2A4365',
+                        'marginTop': '0',
+                        'marginBottom': '20px',
+                        'fontSize': '32px',
+                    }),
+                    html.P(
+                        "Dive deeper into the advanced analytical approaches used to extract these valuable insights.",
+                        style={
+                            'maxWidth': '800px',
+                            'margin': '0 auto 30px',
+                            'fontSize': '18px',
+                            'color': '#2D3748',
+                            'lineHeight': '1.6',
+                        }
+                    ),
+                    html.A("View Research Methodology →", 
+                            href="/methods", 
+                            style={
+                                'padding': '14px 28px',
+                                'backgroundColor': '#4299E1',
+                                'color': 'white',
+                                'borderRadius': '6px',
+                                'textDecoration': 'none',
+                                'fontWeight': '600',
+                                'boxShadow': '0 4px 6px rgba(66, 153, 225, 0.3)',
+                                'transition': 'all 0.2s ease',
+                                'display': 'inline-block',
+                            })
+                ])
+            ])
     ])

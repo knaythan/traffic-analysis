@@ -10,3 +10,8 @@ google-cloud-bigquery-storage
 folium
 db-dtypes
 holidays
+scikit-learn
+scipy
+dash-core-components
+dash-html-components
+

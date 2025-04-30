@@ -314,7 +314,7 @@ def weather_impact_analysis():
             `Precipitation_in_` AS Precipitation,
             `Pressure_in_` AS Pressure,
             `Wind_Speed_mph_` AS Wind_Speed
-        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (3 PERCENT)
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (5 PERCENT)
         WHERE Severity IS NOT NULL 
           AND `Temperature_F_` IS NOT NULL
           AND `Humidity_%_` IS NOT NULL
@@ -410,7 +410,7 @@ def highway_feature_importance():
             `Pressure_in_` AS Pressure,
             `Wind_Speed_mph_` AS Wind_Speed,
             Description
-        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (2 PERCENT)
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (5 PERCENT)
         WHERE Severity IS NOT NULL 
           AND `Temperature_F_` IS NOT NULL
           AND `Humidity_%_` IS NOT NULL
@@ -747,7 +747,7 @@ def severity_by_weather_conditions():
     # Filter for those top conditions
     df_filtered = df[df['Weather_Condition'].isin(top_conditions)]
     
-    # Create a pivot table for easier plotting
+    # Create a pivot table
     pivot_df = df_filtered.pivot_table(
         index='Weather_Condition', 
         columns='Severity', 
@@ -755,35 +755,40 @@ def severity_by_weather_conditions():
         aggfunc='sum'
     ).fillna(0)
     
-    # Calculate percentages for each weather condition
-    for col in pivot_df.columns:
-        pivot_df[col] = pivot_df[col] / pivot_df.sum(axis=1) * 100
+    # Calculate percentages
+    pivot_pct = pivot_df.div(pivot_df.sum(axis=1), axis=0) * 100
     
-    # Reset index to make Weather_Condition a column
-    pivot_df = pivot_df.reset_index()
-    
-    # Create a stacked bar chart
+    # Reset index
+    pivot_pct = pivot_pct.reset_index()
+
+    # Create the figure
     fig = go.Figure()
-    
     colors = ['#AED9E0', '#5E81AC', '#4C566A', '#BF616A']
-    
+
     for i, severity in enumerate(sorted(df['Severity'].unique())):
-        if severity in pivot_df.columns:
+        if severity in pivot_pct.columns:
             fig.add_trace(go.Bar(
-                x=pivot_df['Weather_Condition'],
-                y=pivot_df[severity],
+                x=pivot_pct['Weather_Condition'],
+                y=pivot_pct[severity],
                 name=f'Severity {severity}',
-                marker_color=colors[i % len(colors)]
+                marker_color=colors[i % len(colors)],
+                text=pivot_pct[severity].round(1).astype(str) + '%',
+                textposition='inside'
             ))
-    
+
     fig.update_layout(
         title='Severity Distribution by Top Weather Conditions',
         xaxis_title='Weather Condition',
-        yaxis_title='Percentage (%)',
+        yaxis_title='',
         barmode='stack',
         legend_title='Severity Level',
         height=600,
-        xaxis={'categoryorder':'total descending'}
+        xaxis={'categoryorder':'total descending'},
+        yaxis=dict(
+            showticklabels=False,
+            showgrid=False,
+            zeroline=False
+        )
     )
     
     return dcc.Graph(figure=fig)
@@ -1268,7 +1273,7 @@ def accidents_by_month():
             EXTRACT(YEAR FROM Start_Time) AS Year,
             EXTRACT(MONTH FROM Start_Time) AS Month,
             EXTRACT(DAY FROM Start_Time) AS Day
-        FROM `{PROJECT_ID}.{DATASET}.{TABLE}`
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (10 PERCENT)
         WHERE Start_Time IS NOT NULL
     """
     df = client.query(query).to_dataframe().dropna()
@@ -1425,7 +1430,7 @@ def generate_risk_map_visualization():
             Start_Lat,
             Start_Lng,
             Severity
-        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (10 PERCENT)
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (5 PERCENT)
         WHERE Start_Lat IS NOT NULL AND Start_Lng IS NOT NULL AND Severity IS NOT NULL
     """
     
@@ -1520,154 +1525,157 @@ def generate_risk_map_visualization():
 
 
 
-def model_confusion_matrix():
+def model_performance_visualization():
     """
-    For findings page - shows model accuracy through confusion matrix.
+    Visualize model performance with confusion matrices and feature importance.
+    Includes detailed classification metrics for different training approaches.
     """
-    query = f"""
-        SELECT
-            Severity,
-            `Temperature_F_` AS Temperature,
-            `Humidity_%_` AS Humidity,
-            `Visibility_mi_` AS Visibility,
-            `Precipitation_in_` AS Precipitation,
-            `Pressure_in_` AS Pressure,
-            `Wind_Speed_mph_` AS Wind_Speed,
-            Description
-        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (2 PERCENT)
-        WHERE Severity IS NOT NULL 
-          AND `Temperature_F_` IS NOT NULL
-          AND `Humidity_%_` IS NOT NULL
-          AND `Visibility_mi_` IS NOT NULL
-          AND `Precipitation_in_` IS NOT NULL
-          AND `Pressure_in_` IS NOT NULL
-          AND `Wind_Speed_mph_` IS NOT NULL
-          AND Description IS NOT NULL
-    """
-    df = client.query(query).to_dataframe()
-    
-    # Create highway feature
-    highway_pattern = r'\b(?:I[-\s]?\d+|US[-\s]?\d+|Hwy|HWY|highway)\b'
-    df['highway'] = df['Description'].str.contains(highway_pattern, flags=re.IGNORECASE, na=False).astype(int)
-    df = df.drop(columns=['Description'])
-    
-    # Create binary severity
-    df["Severity_Binary"] = df["Severity"].apply(lambda x: 0 if x <= 2 else 1)
-    
-    # Prepare features and target
-    features = ["Temperature", "Humidity", "Visibility", "Precipitation", "Pressure", "Wind_Speed", "highway"]
-    X = df[features]
-    y = df["Severity_Binary"]
-    
-    # Scale features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # Train-test split
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, stratify=y, random_state=42)
-    
-    # Train model
-    rf_model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=42)
-    rf_model.fit(X_train, y_train)
-    
-    # Predict
-    y_pred = rf_model.predict(X_test)
-    
-    # Calculate confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    
-    # Calculate metrics
-    tn, fp, fn, tp = cm.ravel()
-    accuracy = (tp + tn) / (tp + tn + fp + fn)
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-    
-    # Create plot
-    fig = go.Figure()
-    
-    # Add heatmap
-    fig.add_trace(go.Heatmap(
-        z=cm,
-        x=['Predicted Low', 'Predicted High'],
-        y=['Actual Low', 'Actual High'],
-        colorscale='Blues',
-        showscale=False
-    ))
-    
-    # Add text annotations
-    annotations = []
-    for i in range(2):
-        for j in range(2):
-            annotations.append(dict(
-                x=j,
-                y=i,
-                text=str(cm[i, j]),
-                showarrow=False,
-                font=dict(color='white' if cm[i, j] > cm.max()/2 else 'black', size=16)
-            ))
-    
-    fig.update_layout(
-        title="Severity Prediction Confusion Matrix",
-        annotations=annotations,
-        xaxis=dict(title='Predicted Severity'),
-        yaxis=dict(title='Actual Severity'),
-        height=500,
-        margin=dict(l=20, r=20, t=60, b=20),
-    )
-    
-    # Create metrics section
-    metrics = html.Div([
-        html.H4("Model Performance Metrics", style={'color': '#2C5282', 'marginBottom': '10px'}),
-        html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '15px', 'justifyContent': 'center'}, children=[
-            html.Div(style={
-                'backgroundColor': '#EBF8FF', 
-                'padding': '15px', 
-                'borderRadius': '8px',
-                'textAlign': 'center',
-                'flex': '1',
-                'minWidth': '120px'
-            }, children=[
-                html.Div("Accuracy", style={'fontWeight': 'bold', 'color': '#2B6CB0'}),
-                html.Div(f"{accuracy:.2f}", style={'fontSize': '24px', 'marginTop': '5px'})
-            ]),
-            html.Div(style={
-                'backgroundColor': '#E6FFFA', 
-                'padding': '15px', 
-                'borderRadius': '8px',
-                'textAlign': 'center',
-                'flex': '1',
-                'minWidth': '120px'
-            }, children=[
-                html.Div("Precision", style={'fontWeight': 'bold', 'color': '#2C7A7B'}),
-                html.Div(f"{precision:.2f}", style={'fontSize': '24px', 'marginTop': '5px'})
-            ]),
-            html.Div(style={
-                'backgroundColor': '#FFF5F7', 
-                'padding': '15px', 
-                'borderRadius': '8px',
-                'textAlign': 'center',
-                'flex': '1',
-                'minWidth': '120px'
-            }, children=[
-                html.Div("Recall", style={'fontWeight': 'bold', 'color': '#B83280'}),
-                html.Div(f"{recall:.2f}", style={'fontSize': '24px', 'marginTop': '5px'})
-            ]),
-            html.Div(style={
-                'backgroundColor': '#FFFAF0', 
-                'padding': '15px', 
-                'borderRadius': '8px',
-                'textAlign': 'center',
-                'flex': '1',
-                'minWidth': '120px'
-            }, children=[
-                html.Div("F1 Score", style={'fontWeight': 'bold', 'color': '#C05621'}),
-                html.Div(f"{f1:.2f}", style={'fontSize': '24px', 'marginTop': '5px'})
-            ]),
-        ])
-    ])
-    
+    # Create a container for the entire visualization
     return html.Div([
-        dcc.Graph(figure=fig),
-        metrics
+        # Top row with two confusion matrices side by side
+        html.Div(style={'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '20px'}, children=[
+            # First Confusion Matrix (Left)
+            html.Div(style={'width': '48%'}, children=[
+                html.H4("Balanced Train/Test", style={'textAlign': 'center', 'color': '#2C5282'}),
+                html.Img(
+                    src="/assets/Figure_2.png",
+                    style={'width': '100%', 'height': 'auto', 'maxHeight': '400px', 'objectFit': 'contain'}
+                ),
+                html.Div(style={'backgroundColor': '#F7FAFC', 'padding': '15px', 'borderRadius': '10px', 'marginTop': '10px'}, children=[
+                    html.Div([
+                        html.Div("Classification Report", style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                        html.Table([
+                            html.Thead(html.Tr([
+                                html.Th("Class"),
+                                html.Th("Precision"),
+                                html.Th("Recall"),
+                                html.Th("F1-Score"),
+                                html.Th("Support")
+                            ])),
+                            html.Tbody([
+                                html.Tr([
+                                    html.Td("Low Severity"),
+                                    html.Td("0.81"),
+                                    html.Td("0.87"),
+                                    html.Td("0.84"),
+                                    html.Td("420,204")
+                                ]),
+                                html.Tr([
+                                    html.Td("High Severity"),
+                                    html.Td("0.41"),
+                                    html.Td("0.31"),
+                                    html.Td("0.35"),
+                                    html.Td("124,074")
+                                ]),
+                                html.Tr([
+                                    html.Td("Accuracy"),
+                                    html.Td(colSpan=4, style={'fontWeight': 'bold'}, children=["0.74"])
+                                ]),
+                                html.Tr([
+                                    html.Td("Macro Avg"),
+                                    html.Td("0.61"),
+                                    html.Td("0.59"),
+                                    html.Td("0.60"),
+                                    html.Td("544,278")
+                                ]),
+                                html.Tr([
+                                    html.Td("Weighted Avg"),
+                                    html.Td("0.72"),
+                                    html.Td("0.74"),
+                                    html.Td("0.73"),
+                                    html.Td("544,278")
+                                ])
+                            ])
+                        ], style={'width': '100%', 'borderCollapse': 'collapse'})
+                    ])
+                ])
+            ]),
+            
+            # Second Confusion Matrix (Right)
+            html.Div(style={'width': '48%'}, children=[
+                html.H4("Non-Balanced Train/Test Set", style={'textAlign': 'center', 'color': '#2C5282'}),
+                html.Img(
+                    src="/assets/Figure_1.png",
+                    style={'width': '100%', 'height': 'auto', 'maxHeight': '400px', 'objectFit': 'contain'}
+                ),
+                html.Div(style={'backgroundColor': '#F7FAFC', 'padding': '15px', 'borderRadius': '10px', 'marginTop': '10px'}, children=[
+                    html.Div([
+                        html.Div("Classification Report", style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                        html.Table([
+                            html.Thead(html.Tr([
+                                html.Th("Class"),
+                                html.Th("Precision"),
+                                html.Th("Recall"),
+                                html.Th("F1-Score"),
+                                html.Th("Support")
+                            ])),
+                            html.Tbody([
+                                html.Tr([
+                                    html.Td("Low Severity"),
+                                    html.Td("0.62"),
+                                    html.Td("0.62"),
+                                    html.Td("0.62"),
+                                    html.Td("124,074")
+                                ]),
+                                html.Tr([
+                                    html.Td("High Severity"),
+                                    html.Td("0.62"),
+                                    html.Td("0.61"),
+                                    html.Td("0.62"),
+                                    html.Td("124,074")
+                                ]),
+                                html.Tr([
+                                    html.Td("Accuracy"),
+                                    html.Td(colSpan=4, style={'fontWeight': 'bold'}, children=["0.62"])
+                                ]),
+                                html.Tr([
+                                    html.Td("Macro Avg"),
+                                    html.Td("0.62"),
+                                    html.Td("0.62"),
+                                    html.Td("0.62"),
+                                    html.Td("248,148")
+                                ]),
+                                html.Tr([
+                                    html.Td("Weighted Avg"),
+                                    html.Td("0.62"),
+                                    html.Td("0.62"),
+                                    html.Td("0.62"),
+                                    html.Td("248,148")
+                                ])
+                            ])
+                        ], style={'width': '100%', 'borderCollapse': 'collapse'})
+                    ])
+                ])
+            ])
+        ]),
+        
+        # Feature Importance Section
+        html.Div(style={'marginBottom': '20px'}, children=[
+            html.H4("Feature Importance (Random Forest)", style={'textAlign': 'center', 'color': '#2C5282'}),
+            html.Img(
+                src="/assets/Figure_4.png",
+                style={'width': '100%', 'height': 'auto', 'maxHeight': '400px', 'objectFit': 'contain'}
+            ),
+            html.Div(style={'padding': '15px', 'backgroundColor': '#F7FAFC', 'borderRadius': '10px', 'marginTop': '15px'}, children=[
+                html.H5("Key Feature Insights", style={'color': '#2C5282', 'marginBottom': '10px'}),
+                html.Ul([
+                    html.Li([
+                        html.Strong("Pressure: "), 
+                        "The most influential factor, demonstrating the highest importance score among all features."
+                    ]),
+                    html.Li([
+                        html.Strong("Temperature: "), 
+                        "The second most important factor, showing a significant contribution to the model's predictive power."
+                    ]),
+                    html.Li([
+                        html.Strong("Humidity: "), 
+                        "The third most influential feature, further emphasizing the role of atmospheric conditions."
+                    ]),
+                    html.Li([
+                        html.Strong("Combined Impact: "), 
+                        "The top three factors (Pressure, Temperature, Humidity) account for the majority of the model's predictive capability."
+                    ])
+                ], style={'color': '#4A5568', 'lineHeight': '1.6'})
+            ])
+        ])
     ])
