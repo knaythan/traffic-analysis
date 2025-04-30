@@ -13,7 +13,6 @@ from visuals.analysis import (
     feature_correlation,
     precipitation_vs_severity,
     accidents_by_state,
-    accident_heatmap,
     weather_impact_analysis,
     highway_feature_importance,
     road_feature_chi_square,
@@ -90,17 +89,21 @@ def page():
                     'borderTop': '4px solid #4299E1',
                 }, children=[
                     html.H3("📥 Data Collection", style={'color': '#2B6CB0', 'marginTop': '0'}),
-                    html.P(
-                        "Integrated multiple data sources including transportation department accident reports, "
-                        "weather service APIs, and crowdsourced traffic information spanning 2016-2023.",
-                        style={'lineHeight': '1.6'}
-                    ),
+                    html.P([
+                        "We utilized the U.S. Accidents dataset, which contains accident data collected in real-time ",
+                        "using multiple Traffic APIs from February 2016 to March 2023 for the Contiguous United States. ",
+                        html.Br(), html.Br(),
+                        "Dataset citations:", html.Br(),
+                        "Moosavi et al., \"A Countrywide Traffic Accident Dataset.\", 2019.", html.Br(),
+                        "Moosavi et al., \"Accident Risk Prediction based on Heterogeneous Sparse Data: New Dataset and Insights.\" ",
+                        "In proceedings of the 27th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems, ACM, 2019."
+                    ], style={'lineHeight': '1.6'}),
                     html.Ul([
-                        html.Li("Manual validation of data completeness and consistency", 
+                        html.Li("Comprehensive coverage of accident data across the contiguous U.S.", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Cross-referencing with official traffic reports", 
+                        html.Li("Real-time collection via multiple traffic APIs", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Integration with historical weather data", 
+                        html.Li("Includes environmental and contextual factors for each incident", 
                                 style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
@@ -132,104 +135,50 @@ def page():
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
                 
-                # Card 3 - Preprocessing
-                html.Div(style={
-                    'flex': '1',
-                    'minWidth': '300px',
-                    'padding': '20px',
-                    'borderRadius': '8px',
-                    'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-                    'backgroundColor': 'white',
-                    'margin': '10px',
-                    'borderTop': '4px solid #805AD5',
-                }, children=[
-                    html.H3("🧹 Data Preprocessing", style={'color': '#6B46C1', 'marginTop': '0'}),
-                    html.P(
-                        "Applied robust cleaning and normalization techniques to ensure data quality "
-                        "and prepare the dataset for advanced modeling approaches.",
-                        style={'lineHeight': '1.6'}
-                    ),
-                    html.Ul([
-                        html.Li("Missing value imputation using KNN algorithm", 
-                                style={'margin': '8px 0'}),
-                        html.Li("Outlier detection and treatment with IQR methods", 
-                                style={'margin': '8px 0'}),
-                        html.Li("Feature scaling and encoding for model compatibility", 
-                                style={'margin': '8px 0'}),
-                    ], style={'paddingLeft': '20px', 'color': '#4A5568'})
-                ]),
             ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-between'}),
         ]),
         
         # Analysis Techniques Section
         html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
             html.H2("Analysis Techniques", style={
-                'color': '#2D3748', 
-                'borderBottom': '2px solid #E2E8F0', 
-                'paddingBottom': '10px'
+            'color': '#2D3748', 
+            'borderBottom': '2px solid #E2E8F0', 
+            'paddingBottom': '10px'
             }),
             
             # Statistical Methods
             html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#F7FAFC',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #4299E1',
+            'padding': '25px',
+            'backgroundColor': '#F7FAFC',
+            'borderRadius': '10px',
+            'marginBottom': '25px',
+            'borderLeft': '5px solid #4299E1',
             }, children=[
-                html.H3("Statistical Methods", style={'color': '#2B6CB0', 'marginTop': '0'}),
-                html.P(
-                    "We employed various statistical techniques to uncover patterns and correlations within our dataset:",
-                    style={'fontSize': '18px', 'marginBottom': '20px'}
-                ),
-                
-                # Statistical methods visualization
-                html.Div([
-                    feature_correlation(),
-                    html.Div(style={'height': '30px'}),  # Spacer
-                    weather_impact_analysis()
-                ])
-            ]),
+            html.H3("Statistical Methods", style={'color': '#2B6CB0', 'marginTop': '0'}),
+            html.P(
+                "We employed various statistical techniques to uncover patterns and correlations within our dataset:",
+                style={'fontSize': '18px', 'marginBottom': '20px'}
+            ),
             
-            # Machine Learning Methods
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#F0FFF4',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #38A169',
-            }, children=[
-                html.H3("Machine Learning Approaches", style={'color': '#2F855A', 'marginTop': '0'}),
-                html.P(
-                    "Our predictive models leverage state-of-the-art machine learning algorithms to forecast accident risk and severity:",
-                    style={'fontSize': '18px', 'marginBottom': '20px'}
-                ),
-                
-                # ML methods visualization
-                html.Div([
-                    highway_feature_importance(),
-                    html.Div(style={'height': '30px'}),  # Spacer
-                    model_performance_comparison()
-                ])
+            # Statistical methods visualization
+            html.Div([
+                weather_impact_analysis()
             ]),
+
+            # Spacer
+            html.Div(style={'height': '30px'}),
+
+            # Categorical Analysis
+            html.H3("Categorical Features Analysis", style={'color': '#2B6CB0', 'marginTop': '0'}),
+            html.P(
+                "We analyzed how categorical road features affect accident severity using Chi-Square analysis:",
+                style={'fontSize': '18px', 'marginBottom': '20px'}
+            ),
             
-            # Geospatial Analysis
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#EBF4FF',
-                'borderRadius': '10px',
-                'borderLeft': '5px solid #4C51BF',
-            }, children=[
-                html.H3("Geospatial Analysis", style={'color': '#4C51BF', 'marginTop': '0'}),
-                html.P(
-                    "Our spatial analysis methods identify geographical patterns and hotspots in accident distribution:",
-                    style={'fontSize': '18px', 'marginBottom': '20px'}
-                ),
-                
-                # Geospatial visualization
-                html.Div([
-                    accident_heatmap()
-                ])
+            # Categorical features visualization
+            html.Div([
+                road_feature_chi_square()
+            ])
             ]),
         ]),
         
@@ -252,42 +201,36 @@ def page():
                     style={'fontSize': '18px', 'marginBottom': '20px'}
                 ),
                 
-                # EDA visualizations
+                # EDA visualizations 
                 html.Div([
-                    severity_distribution(),
-                    html.Div(style={'height': '30px'}),  # Spacer
-                    precipitation_vs_severity(),
-                    html.Div(style={'height': '30px'}),  # Spacer
-                    accidents_by_state()
-                ])
+                feature_correlation(),
+                html.Div(style={'height': '30px'}),
+                severity_distribution(),
+                html.Div(style={'height': '30px'}),  # Spacer
+                precipitation_vs_severity(),
+                html.Div(style={'marginTop': '15px'}, children=[
+                    html.P(
+                        "While most accidents occur during conditions of low precipitation (<1 inch), we observe that higher "
+                        "precipitation incidents, though fewer in number, tend to result in more severe outcomes. The log scale "
+                        "reveals that even small amounts of precipitation (0.1-0.3 inches) create hazardous conditions, while "
+                        "extremely heavy precipitation events show distinct severity patterns.",
+                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
+                    )
+                ]),  # Added closing bracket here
+                html.Div(style={'height': '30px'}),  # Spacer
+                accidents_by_state(),
+                html.Div(style={'marginTop': '15px'}, children=[
+                    html.P(
+                        "The visualization of accidents across states reveals significant disparities in incident frequencies. California leads with an exceptional 1,741,433 accidents, substantially higher than Texas at 880,192. The top five states - California, Texas, South Carolina, New York, and North Carolina - demonstrate considerable variation in accident counts, likely influenced by factors such as population density, road infrastructure, and driving conditions.",
+                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
+                    )
+                ]),
+                html.Div(style={'height': '30px'}),  # Spacer
+            ])
             ]),
         ]),
         
-        # Categorical Features Analysis Section
-        html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
-            html.H2("Categorical Features Analysis", style={
-                'color': '#2D3748', 
-                'borderBottom': '2px solid #E2E8F0', 
-                'paddingBottom': '10px'
-            }),
-            
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#FFF8F0',
-                'borderRadius': '10px',
-                'borderLeft': '5px solid #DD6B20',
-            }, children=[
-                html.P(
-                    "We analyzed how categorical road features affect accident severity using Chi-Square analysis:",
-                    style={'fontSize': '18px', 'marginBottom': '20px'}
-                ),
-                
-                # Categorical features visualization
-                html.Div([
-                    road_feature_chi_square()
-                ])
-            ]),
-        ]),
+    
         
         # Tools and Technologies
         html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
@@ -327,9 +270,7 @@ def page():
                     html.H3("Analysis & Modeling", style={'color': '#2D3748', 'marginTop': '0', 'fontSize': '20px'}),
                     html.Ul([
                         html.Li("Scikit-learn for machine learning", style={'margin': '8px 0'}),
-                        html.Li("TensorFlow for neural networks", style={'margin': '8px 0'}),
                         html.Li("SciPy for statistical analysis", style={'margin': '8px 0'}),
-                        html.Li("XGBoost for gradient boosting", style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
                 

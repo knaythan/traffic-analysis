@@ -2,7 +2,7 @@ from dash import dcc, html
 import plotly.graph_objects as go
 import plotly.express as px
 import folium
-from folium.plugins import HeatMap
+from folium.plugins import HeatMap, MarkerCluster
 from google.cloud import bigquery
 import os
 import pandas as pd
@@ -37,11 +37,30 @@ def severity_distribution():
     df = client.query(query).to_dataframe()
     severity_counts = df["Severity"].value_counts().sort_index()
     
-    # Create bar chart with custom styling
-    fig = px.bar(x=severity_counts.index, y=severity_counts.values,
-                 labels={'x': 'Severity Level', 'y': 'Number of Accidents'},
-                 title='Accident Severity Distribution',
-                 color_discrete_sequence=['#4299E1'])
+    # Create a DataFrame to use with Plotly Express
+    plot_df = pd.DataFrame({
+        'Severity': severity_counts.index,
+        'Count': severity_counts.values
+    })
+    
+    # Map severity levels to colors
+    color_map = {
+        1: '#4CAF50',  # Green for low severity
+        2: '#FFEB3B',  # Yellow for moderate
+        3: '#FF5722',  # Red for high
+        4: '#B71C1C'   # Dark red for severe
+    }
+    
+    # Create bar chart with custom colors
+    fig = px.bar(
+        plot_df, 
+        x='Severity', 
+        y='Count',
+        labels={'Severity': 'Severity Level', 'Count': 'Number of Accidents'},
+        title='Accident Severity Distribution',
+        color='Severity',
+        color_discrete_map=color_map
+    )
     
     # Add annotations with exact counts
     for i, count in enumerate(severity_counts.values):
@@ -61,7 +80,6 @@ def severity_distribution():
     )
     
     return dcc.Graph(figure=fig)
-
 
 def feature_correlation():
     """
@@ -173,7 +191,7 @@ def precipitation_vs_severity():
 
 def accidents_by_state():
     """
-    Create a bar chart showing the distribution of accidents by state.
+    Create a bar chart showing the distribution of accidents by state with different colors.
     """
     query = f"""
         SELECT State
@@ -184,13 +202,22 @@ def accidents_by_state():
     state_counts = df["State"].value_counts().sort_values(ascending=False)
     top_states = state_counts.head(15)
     
-    # Create bar chart with custom styling
+    # Create a DataFrame for easier plotting
+    plot_df = pd.DataFrame({
+        'State': top_states.index,
+        'Accidents': top_states.values
+    })
+    
+    # Create bar chart with gradient coloring based on accident count
     fig = px.bar(
-        x=top_states.index, 
-        y=top_states.values,
-        labels={'x': 'State', 'y': 'Number of Accidents'},
+        plot_df,
+        x='State', 
+        y='Accidents',
+        labels={'State': 'State', 'Accidents': 'Number of Accidents'},
         title='Top 15 States by Accident Count',
-        color_discrete_sequence=['#3182CE']
+        color='Accidents',  # Color by accident count
+        color_continuous_scale='Viridis',  # Use a gradient color scale
+        # Other good options: 'Plasma', 'Inferno', 'Turbo', 'Blues', 'YlOrRd'
     )
     
     # Rotate x-axis labels for readability
@@ -210,16 +237,27 @@ def accidents_by_state():
     # Add data labels on top of bars
     for i, value in enumerate(top_states.values):
         fig.add_annotation(
-            x=top_states.index[i],
+            x=plot_df['State'][i],
             y=value,
             text=f"{value:,}",
             showarrow=False,
             yshift=10,
-            font=dict(size=10)
+            font=dict(size=10, color='black')  # White text for better visibility
         )
     
+    # Improve color bar appearance
+    fig.update_coloraxes(
+        colorbar=dict(
+            title="Accident Count",
+            thickness=15,
+            len=0.5,
+            yanchor="top",
+            y=1,
+            ticks="outside"
+        )
+    )
+    
     return dcc.Graph(figure=fig)
-
 
 def accident_heatmap():
     """
@@ -247,8 +285,8 @@ def accident_heatmap():
         # Add heatmap layer with custom parameters
         HeatMap(
             heat_data, 
-            radius=8,
-            blur=4,
+            radius=2,
+            blur=2,
             max_zoom=10
         ).add_to(m)
         
@@ -500,21 +538,102 @@ def road_feature_chi_square():
     # Sort by Chi2 value
     results_df = pd.DataFrame(results).sort_values(by="Chi2", ascending=False)
     
-    # Create bar chart for Chi2 values
-    fig = px.bar(
-        results_df, 
-        x="Feature", 
-        y="Chi2", 
-        title="Chi-Square Testing for Categorical Variables",
-        color="Significant", 
-        color_discrete_map={"Yes": "#3182CE", "No": "#A0AEC0"},
-        labels={"Chi2": "Chi-Square Statistic", "Feature": "Road Feature"}
+    # OPTION 1: Interactive table with colored cells
+    table_fig = go.Figure(data=[go.Table(
+        header=dict(
+            values=["Road Feature", "Chi-Square Value", "P-Value", "Statistically Significant?"],
+            fill_color='#4299E1',
+            align='left',
+            font=dict(color='white', size=14)
+        ),
+        cells=dict(
+            values=[
+                results_df["Feature"], 
+                results_df["Chi2"], 
+                results_df["P_Value"],
+                results_df["Significant"]
+            ],
+            fill_color=[
+                'white',
+                '#EBF8FF',
+                '#EBF8FF',
+                ['#C6F6D5' if x == 'Yes' else '#FED7D7' for x in results_df["Significant"]]
+            ],
+            align='left',
+            font=dict(size=13)
+        )
+    )])
+    
+    table_fig.update_layout(
+        title="Chi-Square Results for Road Features",
+        height=500,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     
-    fig.update_layout(
-        xaxis=dict(tickangle=45),
+    # OPTION 2: Horizontal lollipop chart
+    lollipop_fig = go.Figure()
+    
+    # Add lines
+    lollipop_fig.add_trace(go.Scatter(
+        x=results_df["Chi2"],
+        y=results_df["Feature"],
+        mode='lines',
+        line=dict(color='gray', width=1),
+        showlegend=False
+    ))
+    
+    # Add markers
+    lollipop_fig.add_trace(go.Scatter(
+        x=results_df["Chi2"],
+        y=results_df["Feature"],
+        mode='markers',
+        marker=dict(
+            size=12,
+            color=['#3182CE' if x == 'Yes' else '#A0AEC0' for x in results_df["Significant"]],
+            line=dict(width=1, color='black')
+        ),
+        text=[f"p={p}" for p in results_df["P_Value"]],
+        hovertemplate=
+        '<b>%{y}</b><br>' +
+        'Chi-Square: %{x:.2f}<br>' +
+        'P-Value: %{text}<br>' +
+        '<extra></extra>',
+        showlegend=False
+    ))
+    
+    lollipop_fig.update_layout(
+        title="Road Feature Statistical Significance (Chi-Square Test)",
+        xaxis_title="Chi-Square Value",
+        yaxis_title="Road Feature",
         height=600,
-        margin=dict(l=20, r=20, t=60, b=100),
+        margin=dict(l=20, r=20, t=60, b=20),
+    )
+    
+    # OPTION 3: Interactive Bubble Chart (size and color encode significance)
+    bubble_fig = px.scatter(
+        results_df,
+        y="Feature", 
+        x="Chi2",
+        size="Chi2",  # Bubble size based on Chi2 value
+        color="P_Value",  # Color based on p-value
+        color_continuous_scale="Viridis_r",  # Reverse so smaller p-values (more significant) are darker
+        hover_name="Feature",
+        text="P_Value",
+        size_max=50,
+        title="Chi-Square Statistical Significance by Road Feature"
+    )
+    
+    bubble_fig.update_traces(
+        texttemplate='p=%{text:.5f}',
+        textposition='top center'
+    )
+    
+    bubble_fig.update_layout(
+        height=600,
+        yaxis=dict(title="Road Feature"),
+        xaxis=dict(title="Chi-Square Value"),
+        coloraxis_colorbar=dict(title="P-Value"),
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     
     # Description focuses on methodology
@@ -525,11 +644,23 @@ def road_feature_chi_square():
         style={'fontSize': '15px', 'color': '#4A5568', 'marginTop': '15px'}
     )
     
+    # Create tabs to let user switch between visualizations
+    tabs = dcc.Tabs([
+        dcc.Tab(label="Table View", children=[
+            dcc.Graph(figure=table_fig)
+        ]),
+        dcc.Tab(label="Lollipop Chart", children=[
+            dcc.Graph(figure=lollipop_fig)
+        ]),
+        dcc.Tab(label="Bubble Chart", children=[
+            dcc.Graph(figure=bubble_fig)
+        ])
+    ])
+    
     return html.Div([
-        dcc.Graph(figure=fig),
+        tabs,
         description
     ])
-
 
 def model_performance_comparison():
     """
@@ -1284,6 +1415,109 @@ def accidents_by_month():
     )
 
     return dcc.Graph(figure=fig)
+
+def generate_risk_map_visualization():
+    """
+    Generate an interactive risk map visualization showing geographic accident risk distribution.
+    """
+    query = f"""
+        SELECT 
+            Start_Lat,
+            Start_Lng,
+            Severity
+        FROM `{PROJECT_ID}.{DATASET}.{TABLE}` TABLESAMPLE SYSTEM (10 PERCENT)
+        WHERE Start_Lat IS NOT NULL AND Start_Lng IS NOT NULL AND Severity IS NOT NULL
+    """
+    
+    df = client.query(query).to_dataframe()
+    
+    # Improved rounding logic with dynamic precision
+    def smart_round(series, min_zones=50, max_zones=200):
+        # Calculate the range of coordinates
+        coord_range = series.max() - series.min()
+        
+        # Determine appropriate rounding precision
+        if coord_range > 10:
+            # For large geographic areas, round to 1 decimal place
+            return series.round(1)
+        elif coord_range > 5:
+            # For medium areas, round to 2 decimal places
+            return series.round(2)
+        else:
+            # For smaller areas, round to 3 decimal places
+            return series.round(3)
+    
+    # Apply smart rounding
+    df['Lat_rounded'] = smart_round(df['Start_Lat'])
+    df['Lng_rounded'] = smart_round(df['Start_Lng'])
+    
+    # Group and calculate risk scores with additional filtering
+    grouped = df.groupby(['Lat_rounded', 'Lng_rounded']).agg(
+        total_accidents=('Severity', 'count'),
+        severe_accidents=('Severity', lambda x: (x >= 3).sum())
+    ).reset_index()
+    
+    # Filter out locations with very few total accidents to reduce noise
+    grouped = grouped[grouped['total_accidents'] >= 5]
+    
+    # Calculate risk score with zero-division handling
+    grouped['risk_score'] = grouped.apply(
+        lambda row: row['severe_accidents'] / row['total_accidents'] 
+        if row['total_accidents'] > 0 else 0, 
+        axis=1
+    )
+    # Create base map
+    risk_map = folium.Map(
+        location=[37.8, -96],
+        zoom_start=5,
+        tiles="CartoDB positron"
+    )
+    
+    # Create marker cluster
+    cluster = MarkerCluster().add_to(risk_map)
+    
+    # Define color picker function
+    def color_picker(score):
+        if score < 0.2:
+            return "green"
+        elif score < 0.4:
+            return "orange"
+        elif score < 0.6:
+            return "red"
+        else:
+            return "darkred"
+    
+    # Add markers for each location
+    for _, row in grouped.iterrows():
+        folium.CircleMarker(
+            location=[row['Lat_rounded'], row['Lng_rounded']],
+            radius=6,
+            color=color_picker(row['risk_score']),
+            fill=True,
+            fill_opacity=0.6,
+            popup=(
+                f"Lat/Lon: ({row['Lat_rounded']:.2f}, {row['Lng_rounded']:.2f})<br>"
+                f"Total Accidents: {row['total_accidents']}<br>"
+                f"Severe Accidents: {row['severe_accidents']}<br>"
+                f"Risk Score: {row['risk_score']:.2f}"
+            )
+        ).add_to(cluster)
+    
+    # Convert map to HTML and display in iframe
+    map_html = risk_map.get_root().render()
+    
+    description = html.P(
+        "This risk map shows the geographic distribution of accident risk across the US. "
+        "Green markers indicate low risk areas, while red and dark red markers show high-risk zones. "
+        "The size of markers indicates the total number of accidents in each location.",
+        style={'fontSize': '15px', 'color': '#4A5568', 'marginTop': '15px'}
+    )
+    
+    return html.Div([
+        html.Iframe(srcDoc=map_html, width='100%', height='600px'),
+        description
+    ])
+
 
 
 def model_confusion_matrix():

@@ -7,7 +7,6 @@ from visuals.analysis import (
     severity_distribution,
     feature_correlation,
     precipitation_vs_severity,
-    accidents_by_state,
     accident_heatmap,
     
     # Findings-specific visualizations
@@ -18,7 +17,8 @@ from visuals.analysis import (
     weather_condition_counts,
     predictive_feature_importance,
     accidents_by_month,
-    model_confusion_matrix
+    model_confusion_matrix,
+    generate_risk_map_visualization
 )
 
 def page():
@@ -191,48 +191,7 @@ def page():
                 ])
             ]),
             
-            # Feature Correlation Card
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#EBF4FF',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #4C51BF',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }, children=[
-                html.H3("Weather Variable Correlations", style={'color': '#4C51BF', 'marginTop': '0'}),
-                html.P(
-                    "Correlation analysis between environmental factors reveals key relationships affecting accident conditions:",
-                    style={'fontSize': '16px', 'marginBottom': '20px'}
-                ),
-                feature_correlation()
-            ]),
             
-            # Precipitation vs Severity Card
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#FFFAF0',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #DD6B20',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }, children=[
-                html.H3("Precipitation vs Severity Relationship", style={'color': '#DD6B20', 'marginTop': '0'}),
-                html.P(
-                    "The relationship between precipitation levels and accident severity demonstrates important patterns:",
-                    style={'fontSize': '16px', 'marginBottom': '20px'}
-                ),
-                precipitation_vs_severity(),
-                html.Div(style={'marginTop': '15px'}, children=[
-                    html.P(
-                        "While most accidents occur during conditions of low precipitation (<1 inch), we observe that higher "
-                        "precipitation incidents, though fewer in number, tend to result in more severe outcomes. The log scale "
-                        "reveals that even small amounts of precipitation (0.1-0.3 inches) create hazardous conditions, while "
-                        "extremely heavy precipitation events show distinct severity patterns.",
-                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
-                    )
-                ])
-            ]),
         ]),
         
         # Road Infrastructure Analysis
@@ -354,33 +313,6 @@ def page():
                 'paddingBottom': '10px'
             }),
             
-            # State Analysis Card
-            html.Div(style={
-                'padding': '25px',
-                'backgroundColor': '#FFFAF0',
-                'borderRadius': '10px',
-                'marginBottom': '25px',
-                'borderLeft': '5px solid #DD6B20',
-                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }, children=[
-                html.H3("Accidents by State", style={'color': '#DD6B20', 'marginTop': '0'}),
-                html.P(
-                    "Regional distribution of accidents across states reveals significant patterns:",
-                    style={'fontSize': '16px', 'marginBottom': '20px'}
-                ),
-                accidents_by_state(),
-                html.Div(style={'marginTop': '15px'}, children=[
-                    html.P(
-                        "California, Florida, and Texas consistently show the highest number of recorded accidents, together "
-                        "accounting for over 35% of all accidents in the dataset. While this partially reflects population size, "
-                        "the distribution is not perfectly proportional to population, suggesting other factors like reporting "
-                        "systems, urban density, transportation infrastructure, and regional driving behaviors also play "
-                        "significant roles in accident frequency distributions.",
-                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
-                    )
-                ])
-            ]),
-            
             # Heatmap Card
             html.Div(style={
                 'padding': '25px',
@@ -402,6 +334,33 @@ def page():
                         "but also highlights specific high-risk corridors between urban areas. Eastern and Western coastal regions "
                         "show significantly higher accident densities compared to central parts of the country, correlating with "
                         "both population density and transportation network complexity.",
+                        style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
+                    )
+                ])
+            ]),
+
+# Heatmap Card
+            html.Div(style={
+                'padding': '25px',
+                'backgroundColor': '#F7FAFC',
+                'borderRadius': '10px',
+                'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+                'borderLeft': '5px solid #4299E1',
+            }, children=[
+                html.H3("US Accident Risk Mapping", style={'color': '#2B6CB0', 'marginTop': '0'}),
+                html.P(
+                    "Geographical analysis of accident risk reveals critical safety insights:",
+                    style={'fontSize': '16px', 'marginBottom': '20px'}
+                ),
+                generate_risk_map_visualization(),
+                html.Div(style={'marginTop': '15px'}, children=[
+                    html.P(
+                        "The risk map provides a nuanced visualization of accident severity across the United States. "
+                        "By aggregating and color-coding locations based on the proportion of severe accidents, "
+                        "we identify high-risk corridors and urban centers. The analysis reveals that accident risk "
+                        "is not uniformly distributed, with certain geographic regions showing significantly higher "
+                        "proportions of severe accidents. These hotspots correlate with complex transportation networks, "
+                        "urban density, and potentially challenging driving conditions.",
                         style={'fontSize': '15px', 'fontStyle': 'italic', 'color': '#4A5568', 'lineHeight': '1.5'}
                     )
                 ])
