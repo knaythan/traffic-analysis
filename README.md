@@ -17,6 +17,19 @@ Our goal is to investigate how environmental, temporal, and road network conditi
 
 ---
 
+## Data Source & Citation
+
+Our data was collected from the following source:
+
+[U.S. Accidents Dataset (Kaggle)](https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents)
+
+This dataset was originally compiled and published by Sobhan Moosavi and collaborators. Please cite the following if using the dataset:
+
+> Moosavi, Sobhan, Mohammad Hossein Samavatian, Srinivasan Parthasarathy, and Rajiv Ramnath. “A Countrywide Traffic Accident Dataset.”, 2019.
+
+> Moosavi, Sobhan, Mohammad Hossein Samavatian, Srinivasan Parthasarathy, Radu Teodorescu, and Rajiv Ramnath. "Accident Risk Prediction based on Heterogeneous Sparse Data: New Dataset and Insights." In proceedings of the 27th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems, ACM, 2019.
+
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -96,9 +109,52 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ---
 
+## Pipeline Component Breakdown
+
+Each stage of our pipeline is modular and purpose-built to support clear experimentation, fast iteration, and seamless deployment.
+
+### 1. Data Collection
+- **Source**: [U.S. Accidents Dataset on Kaggle](https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents)
+- **Scope**: February 2016 – March 2023, 7.7M+ records
+- **Automation**: Queried and filtered with BigQuery to ensure relevant, high-quality data for modeling
+
+### 2. Data Cleaning & Feature Engineering
+- **Structured Features**: Weather (temperature, humidity, visibility, wind, pressure), road network flags, rush hour indicators
+- **Unstructured Features**: Accident descriptions processed using TF-IDF
+- **Feature Engineering**:
+  - Highway regex tagging (e.g., "I-80", "US-101")
+  - One-hot encoding, normalization, and missing value handling
+
+### 3. Statistical Testing
+- **Tests Used**: Chi-squared tests, t-tests, Pearson correlations
+- **Purpose**: Validate the significance of key features before modeling
+- **Visuals**: Feature correlation heatmaps and severity-wise comparisons
+
+### 4. Model Training & Evaluation
+- **Baseline Model**: Random Forest Classifier for explainability and benchmarking
+- **Advanced Model**: PyTorch Neural Network for multi-class classification
+- **Data Configurations**: Both balanced and non-balanced versions tested
+- **Evaluation**: Accuracy, confusion matrices, and feature importance plots
+
+### 5. Visualization & Analysis
+- **Libraries**: Plotly, Seaborn, Folium, Dash
+- **Visualizations**:
+  - Severity distribution charts
+  - Temporal trends by hour and month
+  - Heatmaps of national accident density
+  - Feature importance comparisons
+- **Widgets**: Precision-adjustable Folium maps for risk mapping
+
+### 6. Web Dashboard Deployment
+- **Frontend**: Modular layout using Dash components (`pages/`, `navbar.py`)
+- **Backend**: Python with Dash callbacks and plotting logic (`visuals/`)
+- **Hosting**: Google App Engine (`app.yaml` handles configuration)
+- **Structure**: Four main pages — Home, Objectives, Methods, Findings — plus reusable assets and styles
+
+---
+
 ## Repository Structure
 ```plaintext
-.
 traffic-analysis/
 ├── appengine/
 │   ├── components/
