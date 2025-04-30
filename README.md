@@ -3,11 +3,11 @@
 
 This is the official repository for **"Predictive Analytics for Safer Roads"**, a CS 163 final project by Shervan Shahparnia and Nathan Cohn. We analyze 7.7 million U.S. traffic accident records to identify risk factors, develop predictive models, and present our findings in an interactive web dashboard.
 
-🔗 **Live Website**: [https://cs163-final-project.wl.r.appspot.com/home](https://cs163-final-project.wl.r.appspot.com/home)
+**Live Website**: [https://cs163-final-project.wl.r.appspot.com/home](https://cs163-final-project.wl.r.appspot.com/home)
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Our goal is to investigate how environmental, temporal, and road network conditions affect the **severity of traffic accidents**. We:
 - Perform statistical testing and feature analysis
@@ -17,14 +17,14 @@ Our goal is to investigate how environmental, temporal, and road network conditi
 
 ---
 
-## ⚙️ Setup Instructions
+## ⚙Setup Instructions
 
-### 🔧 Prerequisites
+### Prerequisites
 - Python 3.8+
 - Google Cloud SDK (for deployment)
 - Git installed
 
-### 🗂️ Install Dependencies
+### Install Dependencies
 
 Clone the repo and install required packages:
 
@@ -36,13 +36,13 @@ source env/bin/activate  # On Windows: .\env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### ▶️ Run Locally
+### Run Locally
 
 ```bash
 python webapp.py
 ```
 
-### 🧪 Testing the Setup
+### Testing the Setup
 
 To ensure the web application and model code run correctly:
 
@@ -50,7 +50,7 @@ To ensure the web application and model code run correctly:
 2. Open `model.py` and run it to test the model pipeline and view printed metrics.
 3. Ensure your environment has access to BigQuery if fetching live data.
 
-### ☁️ Deploy to Google App Engine
+### Deploy to Google App Engine
 
 ```bash
 gcloud app deploy
@@ -65,7 +65,7 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ---
 
-## 🔄 Project Pipeline
+## Project Pipeline
 
 ```
 +-------------------------------+
@@ -95,7 +95,7 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ---
 
-## 🗃️ Repository Structure
+## Repository Structure
 
 ```plaintext
 .
@@ -117,7 +117,7 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ---
 
-## 📁 Key Files
+## Key Files
 
 | File/Dir                       | Description |
 |-------------------------------|-------------|
@@ -130,7 +130,7 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ---
 
-## 🔍 Key Features
+## Key Features
 
 - **ML & NLP**: Combines TF-IDF vectorization with structured feature scaling
 - **Visualizations**: Folium maps, confusion matrices, bar charts, correlations
@@ -140,13 +140,13 @@ gcloud config set project [YOUR_PROJECT_ID]
 
 ---
 
-## 👨‍💻 Authors
+## Authors
 
 - **Shervan Shahparnia**  
 - **Nathan Cohn**
 
 ---
 
-## 🏁 License
+## License
 
 This project is for educational use as part of San José State University's CS 163 course.
