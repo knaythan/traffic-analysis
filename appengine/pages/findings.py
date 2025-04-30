@@ -363,18 +363,18 @@ def page():
                     'margin': '10px',
                     'borderTop': '4px solid #4299E1',
                 }, children=[
-                    html.H3("🌧️ Weather Impact", style={'color': '#2B6CB0', 'marginTop': '0'}),
+                    html.H3("Environmental Impact", style={'color': '#2B6CB0', 'marginTop': '0'}),
                     html.P(
-                        "Our Random Forest models identified visibility and precipitation as the top weather-related "
-                        "predictors of accident severity, with a combined feature importance of 42%.",
+                        "Our Random Forest models revealed that atmospheric conditions significantly influence accident severity, with pressure, temperature, and humidity emerging as key predictors."
+                        ,
                         style={'lineHeight': '1.6'}
                     ),
                     html.Ul([
-                        html.Li("Visibility below 1 mile increases severity risk by 68%", 
+                        html.Li("Pressure shows the highest feature importance in predicting accident severity", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Light precipitation (0.1-0.3 in) increases severity by 23%", 
+                        html.Li("Temperature ranks as the second most influential environmental factor", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Heavy precipitation (>0.5 in) increases severity by 47%", 
+                        html.Li("Humidity demonstrates a notable correlation with accident characteristics", 
                                 style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
@@ -390,18 +390,18 @@ def page():
                     'margin': '10px',
                     'borderTop': '4px solid #38A169',
                 }, children=[
-                    html.H3("⏰ Temporal Factors", style={'color': '#2F855A', 'marginTop': '0'}),
+                    html.H3("Temporal Analysis", style={'color': '#2F855A', 'marginTop': '0'}),
                     html.P(
-                        "Time-based analysis revealed significant patterns in accident occurrence and severity, "
-                        "with important implications for traffic management.",
+                        "Time-based analysis reveals critical patterns in accident occurrence and severity across different periods."
+                        ,
                         style={'lineHeight': '1.6'}
                     ),
                     html.Ul([
-                        html.Li("Rush hour (7-9 AM, 4-6 PM) accidents have 31% higher severity", 
+                        html.Li("Peak commuting hours (7-9 AM and 4-6 PM) show highest accident frequencies", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Weekend accidents are 18% more severe than weekday incidents", 
+                        html.Li("Accident patterns demonstrate cyclical variations across days and months", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Night-time accidents (10 PM-5 AM) show 27% higher severity ratings", 
+                        html.Li("Major holidays correlate with significant accident spikes", 
                                 style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
@@ -417,18 +417,18 @@ def page():
                     'margin': '10px',
                     'borderTop': '4px solid #805AD5',
                 }, children=[
-                    html.H3("🛣️ Road Characteristics", style={'color': '#6B46C1', 'marginTop': '0'}),
+                    html.H3("Model Performance Insights", style={'color': '#6B46C1', 'marginTop': '0'}),
                     html.P(
-                        "Infrastructure and road design features showed significant correlations with accident "
-                        "frequency and severity in our predictive models.",
+                        "Our predictive models demonstrate nuanced performance across different dataset configurations."
+                        ,
                         style={'lineHeight': '1.6'}
                     ),
                     html.Ul([
-                        html.Li("Highway interchange areas have 52% more severe accidents", 
+                        html.Li("Non-balanced dataset accuracy: 62%", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Roads without dividers show 37% higher severity rates", 
+                        html.Li("Balanced dataset accuracy: 74%", 
                                 style={'margin': '8px 0'}),
-                        html.Li("Construction zones associated with 43% increase in severity", 
+                        html.Li("Variations highlight the complexity of predicting accident severity", 
                                 style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
