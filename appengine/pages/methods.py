@@ -1,10 +1,32 @@
 from dash import dcc, html
+from dash.dependencies import Input, Output
+import pandas as pd
+import numpy as np
+
+# Import styles and components
 from styles.styles import container_style, section_style
 from components.navbar import navbar
 
+# Import visualization functions
+from visuals.analysis import (
+    severity_distribution,
+    feature_correlation,
+    precipitation_vs_severity,
+    accidents_by_state,
+    accident_heatmap,
+    weather_impact_analysis,
+    highway_feature_importance,
+    road_feature_chi_square,
+    model_performance_comparison
+)
+
 def page():
+    """
+    Renders the methodology page with sections describing the research approach,
+    data processing, analysis techniques, and model validation.
+    """
     return html.Div(style=container_style, children=[
-        # Header Section with visual impact
+        # Header Section
         html.Div([
             html.H1("Research Methodology", style={
                 'fontSize': '42px',
@@ -28,7 +50,7 @@ def page():
             ),
         ]),
         
-        # Overview Section with gradient background
+        # Overview Section
         html.Div(style={
             **section_style, 
             'backgroundColor': '#EBF8FF', 
@@ -128,7 +150,7 @@ def page():
                         style={'lineHeight': '1.6'}
                     ),
                     html.Ul([
-                        html.Li("Missing value imputation using MICE algorithm", 
+                        html.Li("Missing value imputation using KNN algorithm", 
                                 style={'margin': '8px 0'}),
                         html.Li("Outlier detection and treatment with IQR methods", 
                                 style={'margin': '8px 0'}),
@@ -161,47 +183,12 @@ def page():
                     style={'fontSize': '18px', 'marginBottom': '20px'}
                 ),
                 
+                # Statistical methods visualization
                 html.Div([
-                    # Column 1
-                    html.Div(style={'flex': '1'}, children=[
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("🔢", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Correlation Analysis", style={'margin': '0 0 5px', 'color': '#2C5282'}),
-                                html.P("Pearson and Spearman correlations to identify relationships between weather variables and accident severity", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("📈", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Regression Analysis", style={'margin': '0 0 5px', 'color': '#2C5282'}),
-                                html.P("Multiple linear and logistic regression to model relationships between environmental factors and accident outcomes", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                    ]),
-                    
-                    # Column 2
-                    html.Div(style={'flex': '1'}, children=[
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("📊", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Time Series Analysis", style={'margin': '0 0 5px', 'color': '#2C5282'}),
-                                html.P("Seasonal decomposition and ARIMA modeling to identify temporal patterns in accident frequency", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("🧩", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Dimensionality Reduction", style={'margin': '0 0 5px', 'color': '#2C5282'}),
-                                html.P("PCA and t-SNE to visualize complex relationships in high-dimensional weather and road condition data", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                    ]),
-                ], style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '20px'}),
+                    feature_correlation(),
+                    html.Div(style={'height': '30px'}),  # Spacer
+                    weather_impact_analysis()
+                ])
             ]),
             
             # Machine Learning Methods
@@ -218,58 +205,12 @@ def page():
                     style={'fontSize': '18px', 'marginBottom': '20px'}
                 ),
                 
+                # ML methods visualization
                 html.Div([
-                    # ML Method 1
-                    html.Div(style={
-                        'flex': '1',
-                        'minWidth': '250px',
-                        'backgroundColor': 'white',
-                        'padding': '15px',
-                        'borderRadius': '8px',
-                        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }, children=[
-                        html.H4("Random Forest Classifier", style={'color': '#2F855A', 'marginTop': '0'}),
-                        html.P(
-                            "Ensemble decision tree approach for accident severity prediction with 87% accuracy, "
-                            "providing intuitive feature importance rankings.",
-                            style={'fontSize': '15px', 'lineHeight': '1.5'}
-                        ),
-                    ]),
-                    
-                    # ML Method 2
-                    html.Div(style={
-                        'flex': '1',
-                        'minWidth': '250px',
-                        'backgroundColor': 'white',
-                        'padding': '15px',
-                        'borderRadius': '8px',
-                        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }, children=[
-                        html.H4("XGBoost", style={'color': '#2F855A', 'marginTop': '0'}),
-                        html.P(
-                            "Gradient boosting implementation optimized for both speed and performance, "
-                            "particularly effective for handling class imbalance in severe accident cases.",
-                            style={'fontSize': '15px', 'lineHeight': '1.5'}
-                        ),
-                    ]),
-                    
-                    # ML Method 3
-                    html.Div(style={
-                        'flex': '1',
-                        'minWidth': '250px',
-                        'backgroundColor': 'white',
-                        'padding': '15px',
-                        'borderRadius': '8px',
-                        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }, children=[
-                        html.H4("Neural Networks", style={'color': '#2F855A', 'marginTop': '0'}),
-                        html.P(
-                            "Deep learning models with custom architecture for capturing non-linear relationships "
-                            "between weather conditions and accident outcomes.",
-                            style={'fontSize': '15px', 'lineHeight': '1.5'}
-                        ),
-                    ]),
-                ], style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '15px'}),
+                    highway_feature_importance(),
+                    html.Div(style={'height': '30px'}),  # Spacer
+                    model_performance_comparison()
+                ])
             ]),
             
             # Geospatial Analysis
@@ -285,53 +226,16 @@ def page():
                     style={'fontSize': '18px', 'marginBottom': '20px'}
                 ),
                 
+                # Geospatial visualization
                 html.Div([
-                    # Left column
-                    html.Div(style={'flex': '1'}, children=[
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("📍", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("DBSCAN Clustering", style={'margin': '0 0 5px', 'color': '#4C51BF'}),
-                                html.P("Density-based spatial clustering to identify accident hotspots without assuming fixed cluster counts", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("🗺️", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Heat Map Analysis", style={'margin': '0 0 5px', 'color': '#4C51BF'}),
-                                html.P("Kernel density estimation to visualize accident concentration across urban areas", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                    ]),
-                    
-                    # Right column
-                    html.Div(style={'flex': '1'}, children=[
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("🏙️", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Urban Network Analysis", style={'margin': '0 0 5px', 'color': '#4C51BF'}),
-                                html.P("Road network topology analysis to identify high-risk road segments and intersection types", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                        html.Div(style={'display': 'flex', 'margin': '15px 0'}, children=[
-                            html.Div("🔍", style={'fontSize': '24px', 'marginRight': '15px', 'width': '30px'}),
-                            html.Div([
-                                html.H4("Proximity Analysis", style={'margin': '0 0 5px', 'color': '#4C51BF'}),
-                                html.P("Assessment of Points of Interest (POIs) impact on accident likelihood using spatial join techniques", 
-                                      style={'margin': '0', 'fontSize': '15px'})
-                            ])
-                        ]),
-                    ]),
-                ], style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '20px'}),
+                    accident_heatmap()
+                ])
             ]),
         ]),
         
-        # Validation Section
+        # Exploratory Data Analysis Section
         html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
-            html.H2("Model Validation Approach", style={
+            html.H2("Exploratory Data Analysis", style={
                 'color': '#2D3748', 
                 'borderBottom': '2px solid #E2E8F0', 
                 'paddingBottom': '10px'
@@ -339,64 +243,49 @@ def page():
             
             html.Div(style={
                 'padding': '25px',
-                'backgroundColor': '#FFFAF0',
+                'backgroundColor': '#FFF5F7',
+                'borderRadius': '10px',
+                'borderLeft': '5px solid #D53F8C',
+            }, children=[
+                html.P(
+                    "Our exploratory analysis revealed key patterns and distributions in the traffic accident data:",
+                    style={'fontSize': '18px', 'marginBottom': '20px'}
+                ),
+                
+                # EDA visualizations
+                html.Div([
+                    severity_distribution(),
+                    html.Div(style={'height': '30px'}),  # Spacer
+                    precipitation_vs_severity(),
+                    html.Div(style={'height': '30px'}),  # Spacer
+                    accidents_by_state()
+                ])
+            ]),
+        ]),
+        
+        # Categorical Features Analysis Section
+        html.Div(style={**section_style, 'marginBottom': '35px'}, children=[
+            html.H2("Categorical Features Analysis", style={
+                'color': '#2D3748', 
+                'borderBottom': '2px solid #E2E8F0', 
+                'paddingBottom': '10px'
+            }),
+            
+            html.Div(style={
+                'padding': '25px',
+                'backgroundColor': '#FFF8F0',
                 'borderRadius': '10px',
                 'borderLeft': '5px solid #DD6B20',
             }, children=[
                 html.P(
-                    "To ensure the robustness of our findings, we implemented a comprehensive validation strategy:",
+                    "We analyzed how categorical road features affect accident severity using Chi-Square analysis:",
                     style={'fontSize': '18px', 'marginBottom': '20px'}
                 ),
                 
+                # Categorical features visualization
                 html.Div([
-                    # Validation method 1
-                    html.Div(style={
-                        'flex': '1',
-                        'backgroundColor': 'white',
-                        'padding': '15px',
-                        'borderRadius': '8px',
-                        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }, children=[
-                        html.H4("Cross-Validation", style={'color': '#DD6B20', 'marginTop': '0'}),
-                        html.P(
-                            "Employed stratified 5-fold cross-validation to assess model performance across different data subsets, "
-                            "ensuring consistent performance across geographical regions.",
-                            style={'fontSize': '15px', 'lineHeight': '1.5'}
-                        ),
-                    ]),
-                    
-                    # Validation method 2
-                    html.Div(style={
-                        'flex': '1',
-                        'backgroundColor': 'white',
-                        'padding': '15px',
-                        'borderRadius': '8px',
-                        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }, children=[
-                        html.H4("Temporal Hold-Out", style={'color': '#DD6B20', 'marginTop': '0'}),
-                        html.P(
-                            "Used temporal split validation with the most recent 6 months as a hold-out set to assess "
-                            "model generalization to future accidents and seasonal patterns.",
-                            style={'fontSize': '15px', 'lineHeight': '1.5'}
-                        ),
-                    ]),
-                    
-                    # Validation method 3
-                    html.Div(style={
-                        'flex': '1',
-                        'backgroundColor': 'white',
-                        'padding': '15px',
-                        'borderRadius': '8px',
-                        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }, children=[
-                        html.H4("Evaluation Metrics", style={'color': '#DD6B20', 'marginTop': '0'}),
-                        html.P(
-                            "Evaluated models using balanced metrics (F1-score, ROC-AUC) with emphasis on recall for severe "
-                            "accidents to prioritize public safety implications.",
-                            style={'fontSize': '15px', 'lineHeight': '1.5'}
-                        ),
-                    ]),
-                ], style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '15px'}),
+                    road_feature_chi_square()
+                ])
             ]),
         ]),
         
@@ -421,8 +310,8 @@ def page():
                     html.H3("Data Processing", style={'color': '#2D3748', 'marginTop': '0', 'fontSize': '20px'}),
                     html.Ul([
                         html.Li("Python (Pandas, NumPy)", style={'margin': '8px 0'}),
-                        html.Li("SQL for database operations", style={'margin': '8px 0'}),
-                        html.Li("Databricks for distributed processing", style={'margin': '8px 0'}),
+                        html.Li("Google BigQuery for data storage", style={'margin': '8px 0'}),
+                        html.Li("Scikit-learn for preprocessing", style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
                 
@@ -439,7 +328,8 @@ def page():
                     html.Ul([
                         html.Li("Scikit-learn for machine learning", style={'margin': '8px 0'}),
                         html.Li("TensorFlow for neural networks", style={'margin': '8px 0'}),
-                        html.Li("StatsModels for statistical analysis", style={'margin': '8px 0'}),
+                        html.Li("SciPy for statistical analysis", style={'margin': '8px 0'}),
+                        html.Li("XGBoost for gradient boosting", style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
                 
@@ -455,8 +345,9 @@ def page():
                     html.H3("Visualization", style={'color': '#2D3748', 'marginTop': '0', 'fontSize': '20px'}),
                     html.Ul([
                         html.Li("Plotly Dash for interactive dashboards", style={'margin': '8px 0'}),
-                        html.Li("GeoPandas for spatial visualization", style={'margin': '8px 0'}),
+                        html.Li("Folium for geospatial visualization", style={'margin': '8px 0'}),
                         html.Li("Matplotlib and Seaborn for statistical plots", style={'margin': '8px 0'}),
+                        html.Li("Plotly Express for interactive charts", style={'margin': '8px 0'}),
                     ], style={'paddingLeft': '20px', 'color': '#4A5568'})
                 ]),
             ]),
