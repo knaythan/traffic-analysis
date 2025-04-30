@@ -22,45 +22,76 @@ Our goal is to investigate how environmental, temporal, and road network conditi
 ### 🔧 Prerequisites
 - Python 3.8+
 - Google Cloud SDK (for deployment)
-- `pip install -r requirements.txt`
+- Git installed
 
 ### 🗂️ Install Dependencies
+
+Clone the repo and install required packages:
+
 ```bash
+git clone https://github.com/your-username/traffic-analysis-dashboard.git
+cd traffic-analysis-dashboard
+python -m venv env
+source env/bin/activate  # On Windows: .\env\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ### ▶️ Run Locally
+
 ```bash
 python webapp.py
 ```
 
+### 🧪 Testing the Setup
+
+To ensure the web application and model code run correctly:
+
+1. Run `webapp.py` and confirm Dash loads on [http://127.0.0.1:8050](http://127.0.0.1:8050).
+2. Open `model.py` and run it to test the model pipeline and view printed metrics.
+3. Ensure your environment has access to BigQuery if fetching live data.
+
 ### ☁️ Deploy to Google App Engine
+
 ```bash
 gcloud app deploy
+```
+
+Make sure your Google Cloud project is set up and authenticated locally using:
+
+```bash
+gcloud auth login
+gcloud config set project [YOUR_PROJECT_ID]
 ```
 
 ---
 
 ## 🔄 Project Pipeline
 
-```mermaid
-graph TD;
-    A[Data Collection] --> B[Cleaning & Feature Engineering]
-    B --> C[Statistical Testing]
-    C --> D[Model Training (ML, NN)]
-    D --> E[Evaluation & Visualization]
-    E --> F[Web Dashboard Deployment]
 ```
-
-### Step-by-Step:
-1. **Data Collection**: Raw accident data from BigQuery (2016–2023).
-2. **Cleaning & Engineering**: Preprocessing includes scaling, TF-IDF, one-hot encoding, and highway feature extraction.
-3. **Statistical Testing**: T-tests, chi-squared, correlation to validate feature importance.
-4. **Modeling**:
-   - Binary classification (Low vs. High Severity) using Random Forest
-   - 4-class prediction using a PyTorch Neural Network
-5. **Visualization**: Interactive visualizations with Plotly and Folium
-6. **Deployment**: Dash app hosted on Google App Engine
++-------------------------------+
+|       Data Collection         |
++-------------------------------+
+              ↓
++-------------------------------+
+| Cleaning & Feature Engineering|
++-------------------------------+
+              ↓
++-------------------------------+
+|     Statistical Testing       |
++-------------------------------+
+              ↓
++-------------------------------+
+|   Model Training (ML, NN)     |
++-------------------------------+
+              ↓
++-------------------------------+
+| Evaluation & Visualization    |
++-------------------------------+
+              ↓
++-------------------------------+
+| Web Dashboard Deployment      |
++-------------------------------+
+```
 
 ---
 
